@@ -1,30 +1,30 @@
 import { useMemo, useState } from 'react'
-import { PEOPLE, YOUR_CHIP_OPTIONS } from './data.js'
+import { PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Interstitial from './screens/Interstitial.jsx'
-import Respond from './screens/Respond.jsx'
+import Adjust from './screens/Adjust.jsx'
 import Ranking from './screens/Ranking.jsx'
 import Confirmed from './screens/Confirmed.jsx'
 
-const STEPS = ['framing', 'create', 'sent', 'respond', 'collected', 'ranking', 'confirmed']
+const STEPS = ['framing', 'create', 'sent', 'adjust', 'collected', 'ranking', 'confirmed']
 
 // 데모 내레이션 — 화자가 바뀌는 지점을 다크 화면으로 분리한다.
 const NARRATIONS = {
   sent: {
-    kicker: '요청 완료',
+    kicker: '후보 즉시 생성',
     lines: [
-      '5명에게 링크를 보냈어요.',
-      '바쁜 시간은 사내 캘린더에서 자동으로 가져와요. 그래서 각자는 캘린더가 모르는 것만 답하면 돼요 — 10초면 충분해요.',
+      '만들자마자 후보가 나왔어요.',
+      '바쁜 시간은 캘린더가, 성향은 지난 응답들이 이미 알고 있거든요. 다만 다음 주가 평소와 다를 수 있어서, 모두에게 확인 요청만 보냈어요.',
     ],
-    handoff: '이번엔 응답자, 서연의 화면이에요.',
+    handoff: '이번엔 확인 요청을 받은 서연의 화면이에요.',
     cta: '서연의 화면으로',
   },
   collected: {
-    kicker: '응답 수집',
+    kicker: '확인 수집',
     lines: [
-      '서연까지 4명이 답했어요.',
-      '준호는 아직 안 봤지만 괜찮아요. 준호가 언제 바쁜지는 캘린더가 이미 알고 있으니까, 기다리지 않고 후보를 만들 수 있어요.',
+      '서연은 탭 한 번으로 끝났어요.',
+      '4명이 확인했고 준호는 아직이지만 — 캘린더와 지난 응답 기준으로 이미 반영돼 있어서, 미응답이 결정을 막지 않아요.',
     ],
     handoff: '다시 주최자, 지민의 화면이에요.',
     cta: '후보 시간 보기',
@@ -34,26 +34,35 @@ const NARRATIONS = {
 export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
   const [people, setPeople] = useState(PEOPLE)
-  const [yourChipIds, setYourChipIds] = useState([])
+  const [profileOff, setProfileOff] = useState([]) // 이번 주만 끈 프로필 항목
+  const [exceptions, setExceptions] = useState([]) // 이번 주만 추가한 예외
   const [confirmedSlot, setConfirmedSlot] = useState(null)
 
   const step = STEPS[stepIndex]
-  const yourChips = useMemo(
-    () => YOUR_CHIP_OPTIONS.filter((c) => yourChipIds.includes(c.id)),
-    [yourChipIds]
-  )
+
+  // 서연의 이번 주 조건 = 프로필(안 끈 것) + 이번 주 예외
+  const yourChips = useMemo(() => [
+    ...YOUR_PROFILE.filter((c) => !profileOff.includes(c.id)),
+    ...EXCEPTION_OPTIONS
+      .filter((o) => exceptions.includes(o.id))
+      .map((o) => ({ kind: 'avoid', short: `${o.full} · 이번 주만`, match: o.match })),
+  ], [profileOff, exceptions])
 
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const reset = () => {
     setStepIndex(0)
     setPeople(PEOPLE)
-    setYourChipIds([])
+    setProfileOff([])
+    setExceptions([])
     setConfirmedSlot(null)
   }
 
+  const toggleIn = (setter) => (id) =>
+    setter((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
+
   const viewpoint = {
     create: '지민 — 주최자의 화면',
-    respond: '서연 — 응답자의 화면',
+    adjust: '서연 — 참석자의 화면',
     ranking: '지민 — 주최자의 화면',
     confirmed: '지민 — 주최자의 화면',
   }[step]
@@ -68,19 +77,25 @@ export default function App() {
         <div className="screen" key={step}>
           {step === 'framing' && <Framing onNext={next} />}
           {step === 'create' && (
-            <Create people={people} onTogglePerson={(id) =>
-              setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
-            } onNext={next} />
+            <Create
+              people={people}
+              onTogglePerson={(id) =>
+                setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
+              }
+              onAddPerson={(s) => setPeople((ps) => [...ps, { ...s, isAdded: true }])}
+              onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
+              onNext={next}
+            />
           )}
           {(step === 'sent' || step === 'collected') && (
             <Interstitial narration={NARRATIONS[step]} onNext={next} />
           )}
-          {step === 'respond' && (
-            <Respond
-              selected={yourChipIds}
-              onToggleChip={(id) =>
-                setYourChipIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
-              }
+          {step === 'adjust' && (
+            <Adjust
+              profileOff={profileOff}
+              exceptions={exceptions}
+              onToggleProfile={toggleIn(setProfileOff)}
+              onToggleException={toggleIn(setExceptions)}
               onNext={next}
             />
           )}

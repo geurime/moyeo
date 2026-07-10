@@ -28,10 +28,10 @@ export default function Ranking({ people, yourChips, onConfirm }) {
       </header>
 
       <div className="badge-row">
-        <span className="badge">응답 {respondedCount}/{invitees.length}</span>
+        <span className="badge">확인 {respondedCount}/{invitees.length}</span>
         {silent.length > 0 && (
           <span className="badge-note">
-            미응답 {silent.map((p) => p.name).join(', ')}님은 캘린더 기준으로 반영했어요
+            미확인 {silent.map((p) => p.name).join(', ')}님은 캘린더·지난 응답 기준으로 반영했어요
           </span>
         )}
       </div>

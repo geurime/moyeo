@@ -88,12 +88,39 @@ export const SOFT_CHIPS = {
   // 서연(=데모의 '나')의 칩은 응답 화면에서 직접 선택한다.
 }
 
-// 응답 화면에서 서연에게 보여줄 칩 후보.
-export const YOUR_CHIP_OPTIONS = [
-  { id: 'seoyeon-lunch', kind: 'avoid',  label: '점심 직후는 피하고 싶어요',  short: '점심 직후 비선호', match: (d, h) => h === 13 },
-  { id: 'seoyeon-am',    kind: 'prefer', label: '오전이 좋아요',             short: '오전 선호',       match: (d, h) => h < 12 },
-  { id: 'seoyeon-mon',   kind: 'avoid',  label: '월요일은 피하고 싶어요',     short: '월요일 비선호',   match: (d) => d === '월' },
+// 서연의 프로필 — 별도 설정 화면에서 만든 게 아니라, 지난 회의들의 응답이 쌓여
+// 기본값이 된 것. 조정 화면에 미리 켜진 상태로 나타나고, 끄면 '이번 주만' 꺼진다.
+export const YOUR_PROFILE = [
+  { id: 'seoyeon-lunch', kind: 'avoid',  label: '점심 직후는 피하고 싶어요', short: '점심 직후 비선호', source: '지난 응답 3회', match: (d, h) => h === 13 },
+  { id: 'seoyeon-am',    kind: 'prefer', label: '오전이 좋아요',            short: '오전 선호',       source: '지난 응답 2회', match: (d, h) => h < 12 },
 ]
 
-// 데모 기본값: 서연이 실제로 선택하는 칩 (응답 화면에서 미리 켜두지 않고, 탭하도록 유도)
-export const YOUR_DEFAULT_CHIPS = ['seoyeon-lunch', 'seoyeon-am']
+// '이번 주만 달라요' 예외 문법 — 요일 × 시간대. 탭하면 이번 주 한정 감점으로 반영.
+export const EXCEPTION_OPTIONS = [
+  { id: 'ex-mon', group: 'day', label: '월', full: '월요일', match: (d) => d === '월' },
+  { id: 'ex-tue', group: 'day', label: '화', full: '화요일', match: (d) => d === '화' },
+  { id: 'ex-wed', group: 'day', label: '수', full: '수요일', match: (d) => d === '수' },
+  { id: 'ex-thu', group: 'day', label: '목', full: '목요일', match: (d) => d === '목' },
+  { id: 'ex-fri', group: 'day', label: '금', full: '금요일', match: (d) => d === '금' },
+  { id: 'ex-am',    group: 'time', label: '오전',      full: '오전',      match: (d, h) => h < 12 },
+  { id: 'ex-lunch', group: 'time', label: '점심 직후', full: '점심 직후', match: (d, h) => h === 13 },
+  { id: 'ex-pm',    group: 'time', label: '오후',      full: '오후',      match: (d, h) => h >= 13 && h < 16 },
+  { id: 'ex-late',  group: 'time', label: '늦은 오후', full: '늦은 오후', match: (d, h) => h >= 16 },
+]
+
+// 생성 화면의 '동료 추가' 검색 제안 — 추가하면 랭킹에 실제로 반영된다.
+export const SUGGESTED_PEOPLE = [
+  { id: 'dahye', name: '다혜', initial: '다', required: false, responded: true },
+  { id: 'taeo',  name: '태오', initial: '태', required: false, responded: true },
+]
+
+export const SUGGESTED_BUSY = {
+  dahye: [
+    { day: '화', start: 13, end: 15, title: '브랜드 리뷰' },
+    { day: '금', start: 10, end: 12, title: '촬영 입회' },
+  ],
+  taeo: [
+    { day: '월', start: 10, end: 12, title: '법무 검토' },
+    { day: '수', start: 14, end: 16, title: '파트너 미팅' },
+  ],
+}

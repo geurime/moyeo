@@ -7,12 +7,14 @@
 //   소프트 선호 일치       → +6   (좋음)
 // 동점이면 주 초반 슬롯 우선 — "기한(다음 주까지) 안에서 빨리 확정"이 낫다는 판단.
 
-import { DAYS, HOURS, BUSY, SOFT_CHIPS } from './data.js'
+import { DAYS, HOURS, BUSY, SOFT_CHIPS, SUGGESTED_BUSY } from './data.js'
+
+const ALL_BUSY = { ...BUSY, ...SUGGESTED_BUSY }
 
 const SCORE = { OPTIONAL_BUSY: -40, AVOID: -12, PREFER: +6 }
 
 export function isBusy(personId, day, hour) {
-  return (BUSY[personId] || []).some((b) => b.day === day && hour >= b.start && hour < b.end)
+  return (ALL_BUSY[personId] || []).some((b) => b.day === day && hour >= b.start && hour < b.end)
 }
 
 // people: [{ id, name, required, responded }]

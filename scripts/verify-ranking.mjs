@@ -4,13 +4,13 @@
 //   2. 그러나 '완벽한 슬롯'(전원 참석 + 침해 0)은 없다 (트레이드오프가 드러남)
 //   3. 1위 = 화 10:00 (전원 참석, 민수 비선호)
 //   4. 상위 3개의 트레이드오프 사유가 서로 다르다 (카드 다양성)
-//   5. 서연이 칩을 하나도 안 골라도 1위는 화 10:00 (데모 견고성)
+//   5. 조정 화면에서 무엇을 켜고 꺼도 1위는 화 10:00 (데모 견고성)
 
-import { PEOPLE, YOUR_CHIP_OPTIONS, YOUR_DEFAULT_CHIPS } from '../src/data.js'
+import { PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from '../src/data.js'
 import { rankSlots, slotReason } from '../src/ranking.js'
 
-const yourChips = YOUR_CHIP_OPTIONS.filter((c) => YOUR_DEFAULT_CHIPS.includes(c.id))
-const ranked = rankSlots(PEOPLE, yourChips)
+// 데모 기본 상태: 프로필 전부 켜짐, 예외 없음
+const ranked = rankSlots(PEOPLE, YOUR_PROFILE)
 
 let failures = 0
 const check = (name, cond, detail = '') => {
@@ -46,21 +46,20 @@ check('상위 3개 트레이드오프 사유가 서로 다름', new Set(texts).s
 check('상위 3개에 불참(absent) 케이스 포함', top3.some((s) =>
   slotReason(s, 6).tradeoffs.some((t) => t.kind === 'absent')))
 
-// 견고성: 서연이 아무 칩도 안 고른 경우
-const rankedEmpty = rankSlots(PEOPLE, [])
-const topEmpty = rankedEmpty[0]
-check('칩 미선택 시에도 1위는 화 10:00', topEmpty.day === '화' && topEmpty.hour === 10,
+// 견고성 1: 프로필을 전부 이번 주만 끈 경우
+const topEmpty = rankSlots(PEOPLE, [])[0]
+check('프로필 전부 꺼도 1위는 화 10:00', topEmpty.day === '화' && topEmpty.hour === 10,
   `실제: ${topEmpty.day} ${topEmpty.hour}:00`)
 
-// 견고성: 모든 칩을 고른 경우
-const rankedAll = rankSlots(PEOPLE, YOUR_CHIP_OPTIONS)
-const topAll = rankedAll[0]
-check('칩 전부 선택 시에도 1위는 화 10:00', topAll.day === '화' && topAll.hour === 10,
+// 견고성 2: 이번 주 예외를 전부 켠 경우 (모든 요일·시간대 비선호)
+const allExceptions = EXCEPTION_OPTIONS.map((o) => ({ kind: 'avoid', short: `${o.full} · 이번 주만`, match: o.match }))
+const topAll = rankSlots(PEOPLE, [...YOUR_PROFILE, ...allExceptions])[0]
+check('예외 전부 켜도 1위는 화 10:00 (균일 감점이라 순위 유지)', topAll.day === '화' && topAll.hour === 10,
   `실제: ${topAll.day} ${topAll.hour}:00`)
 
-// 준호(미응답)가 랭킹에 반영되는지 — 캘린더 폴백
+// 준호(미확인)가 랭킹에 반영되는지 — 캘린더 폴백
 const junhoInTop = top && top.statuses.find((s) => s.person.id === 'junho')
-check('미응답자 준호가 캘린더 기준으로 반영됨', junhoInTop && junhoInTop.status === 'calendar-only')
+check('미확인자 준호가 캘린더 기준으로 반영됨', junhoInTop && junhoInTop.status === 'calendar-only')
 
 console.log(failures === 0 ? '\n모든 검증 통과' : `\n${failures}개 실패`)
 process.exit(failures === 0 ? 0 : 1)

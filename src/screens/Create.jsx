@@ -1,9 +1,13 @@
 import { useState } from 'react'
-import { MEETING } from '../data.js'
+import { MEETING, SUGGESTED_PEOPLE } from '../data.js'
 
-export default function Create({ people, onTogglePerson, onNext }) {
+export default function Create({ people, onTogglePerson, onAddPerson, onRemovePerson, onNext }) {
   const [title, setTitle] = useState(MEETING.title)
+  const [periodOpen, setPeriodOpen] = useState(false)
+  const [periodHint, setPeriodHint] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const requiredCount = people.filter((p) => p.required).length
+  const remaining = SUGGESTED_PEOPLE.filter((s) => !people.some((p) => p.id === s.id))
 
   return (
     <div className="product">
@@ -17,19 +21,30 @@ export default function Create({ people, onTogglePerson, onNext }) {
           <span className="field-label">회의 이름</span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="회의 이름" />
         </label>
-        <div className="field-row">
-          <div className="field">
-            <span className="field-label">길이</span>
-            <div className="seg" role="group" aria-label="회의 길이">
-              <button className="seg-btn">30분</button>
-              <button className="seg-btn is-on">1시간</button>
-              <button className="seg-btn">90분</button>
-            </div>
+        <div className="field">
+          <span className="field-label">길이</span>
+          <div className="seg" role="group" aria-label="회의 길이">
+            <button className="seg-btn">30분</button>
+            <button className="seg-btn is-on">1시간</button>
+            <button className="seg-btn">90분</button>
           </div>
         </div>
         <div className="field">
           <span className="field-label">기간</span>
-          <span className="field-value">{MEETING.weekLabel}</span>
+          <button className="field-picker" onClick={() => setPeriodOpen(!periodOpen)} aria-expanded={periodOpen}>
+            <span className="field-value">{MEETING.weekLabel}</span>
+            <span className={`picker-chev ${periodOpen ? 'is-open' : ''}`} aria-hidden="true">⌄</span>
+          </button>
+          {periodOpen && (
+            <div className="picker-options">
+              <button className="picker-opt" onClick={() => setPeriodHint(true)}>이번 주 · 7월 7일(월) – 11일(금)</button>
+              <button className="picker-opt is-on" onClick={() => { setPeriodOpen(false); setPeriodHint(false) }}>
+                다음 주 · 7월 13일(월) – 17일(금) ✓
+              </button>
+              <button className="picker-opt" onClick={() => setPeriodHint(true)}>날짜 직접 선택</button>
+              {periodHint && <p className="picker-hint">데모는 ‘다음 주’ 시나리오로 진행돼요</p>}
+            </div>
+          )}
         </div>
       </div>
 
@@ -46,6 +61,9 @@ export default function Create({ people, onTogglePerson, onNext }) {
               <span className="person-name">
                 {p.name}
                 {p.isHost && <span className="tag">나 · 주최</span>}
+                {p.isAdded && (
+                  <button className="remove-btn" onClick={() => onRemovePerson(p.id)} aria-label={`${p.name} 제외`}>✕</button>
+                )}
               </span>
               <button
                 className={`toggle ${p.required ? 'is-required' : ''}`}
@@ -59,13 +77,32 @@ export default function Create({ people, onTogglePerson, onNext }) {
             </li>
           ))}
         </ul>
+
+        {remaining.length > 0 && (
+          <div className="add-area">
+            <button className="add-btn" onClick={() => setSearchOpen(!searchOpen)} aria-expanded={searchOpen}>
+              + 동료 추가
+            </button>
+            {searchOpen && (
+              <ul className="suggest-list">
+                {remaining.map((s) => (
+                  <li key={s.id} className="suggest-row">
+                    <span className="avatar">{s.initial}</span>
+                    <span className="person-name">{s.name}</span>
+                    <button className="suggest-add" onClick={() => onAddPerson(s)}>추가</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </section>
 
       <div className="cta-dock">
-        <button className="cta" onClick={onNext}>
-          {people.length - 1}명에게 요청 보내기
-        </button>
-        <p className="cta-hint">필수 {requiredCount}명 · 바쁜 시간은 사내 캘린더에서 자동으로 가져와요</p>
+        <button className="cta" onClick={onNext}>후보 시간 바로 보기</button>
+        <p className="cta-hint">
+          필수 {requiredCount}명 · 캘린더와 지난 응답이 이미 있어서, 기다림 없이 후보가 나와요
+        </p>
       </div>
     </div>
   )
