@@ -1,0 +1,66 @@
+// 데모 시나리오 검증 — 더미 데이터가 설계 의도대로 랭킹되는지 확인한다.
+// 의도:
+//   1. 전원(6명) 참석 가능한 슬롯이 존재한다 (과제 요구: 모두가 괜찮은 시간)
+//   2. 그러나 '완벽한 슬롯'(전원 참석 + 침해 0)은 없다 (트레이드오프가 드러남)
+//   3. 1위 = 화 10:00 (전원 참석, 민수 비선호)
+//   4. 상위 3개의 트레이드오프 사유가 서로 다르다 (카드 다양성)
+//   5. 서연이 칩을 하나도 안 골라도 1위는 화 10:00 (데모 견고성)
+
+import { PEOPLE, YOUR_CHIP_OPTIONS, YOUR_DEFAULT_CHIPS } from '../src/data.js'
+import { rankSlots, slotReason } from '../src/ranking.js'
+
+const yourChips = YOUR_CHIP_OPTIONS.filter((c) => YOUR_DEFAULT_CHIPS.includes(c.id))
+const ranked = rankSlots(PEOPLE, yourChips)
+
+let failures = 0
+const check = (name, cond, detail = '') => {
+  console.log(`${cond ? '✓' : '✗ FAIL'}  ${name}${detail ? ` — ${detail}` : ''}`)
+  if (!cond) failures++
+}
+
+console.log('=== 후보 슬롯 전체 (점수순) ===')
+for (const s of ranked) {
+  const r = slotReason(s, PEOPLE.length)
+  console.log(
+    `${s.day} ${String(s.hour).padStart(2, '0')}:00  score=${String(s.score).padStart(4)}  ` +
+    `참석 ${s.attendCount}/6  | ${r.headline} · ${r.tradeoffs.map((t) => t.text).join(' · ')}`
+  )
+}
+console.log(`\n총 ${ranked.length}개 슬롯 생존 (30개 중, 나머지는 필수 인원 충돌로 탈락)\n`)
+
+console.log('=== 설계 의도 검증 ===')
+const top = ranked[0]
+check('1위는 화 10:00', top && top.day === '화' && top.hour === 10, top && `실제 1위: ${top.day} ${top.hour}:00`)
+check('1위는 전원 6명 참석', top && top.attendCount === 6)
+
+const fullSlots = ranked.filter((s) => s.attendCount === PEOPLE.length)
+check('전원 참석 가능 슬롯 존재', fullSlots.length > 0, `${fullSlots.length}개`)
+
+const perfect = ranked.filter((s) => s.attendCount === PEOPLE.length && s.score >= 0 &&
+  s.statuses.every((st) => st.status === 'ok' || st.status === 'calendar-only'))
+check('완벽한 슬롯(침해 0)은 없음', perfect.length === 0, perfect.length > 0 ? `완벽 슬롯: ${perfect.map((s) => s.day + s.hour).join(',')}` : '')
+
+const top3 = ranked.slice(0, 3)
+const texts = top3.map((s) => slotReason(s, 6).tradeoffs.map((t) => t.text).join('·'))
+check('상위 3개 트레이드오프 사유가 서로 다름', new Set(texts).size === 3, texts.join(' / '))
+check('상위 3개에 불참(absent) 케이스 포함', top3.some((s) =>
+  slotReason(s, 6).tradeoffs.some((t) => t.kind === 'absent')))
+
+// 견고성: 서연이 아무 칩도 안 고른 경우
+const rankedEmpty = rankSlots(PEOPLE, [])
+const topEmpty = rankedEmpty[0]
+check('칩 미선택 시에도 1위는 화 10:00', topEmpty.day === '화' && topEmpty.hour === 10,
+  `실제: ${topEmpty.day} ${topEmpty.hour}:00`)
+
+// 견고성: 모든 칩을 고른 경우
+const rankedAll = rankSlots(PEOPLE, YOUR_CHIP_OPTIONS)
+const topAll = rankedAll[0]
+check('칩 전부 선택 시에도 1위는 화 10:00', topAll.day === '화' && topAll.hour === 10,
+  `실제: ${topAll.day} ${topAll.hour}:00`)
+
+// 준호(미응답)가 랭킹에 반영되는지 — 캘린더 폴백
+const junhoInTop = top && top.statuses.find((s) => s.person.id === 'junho')
+check('미응답자 준호가 캘린더 기준으로 반영됨', junhoInTop && junhoInTop.status === 'calendar-only')
+
+console.log(failures === 0 ? '\n모든 검증 통과' : `\n${failures}개 실패`)
+process.exit(failures === 0 ? 0 : 1)

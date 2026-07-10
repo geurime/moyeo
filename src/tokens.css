@@ -1,0 +1,88 @@
+/* ── 규율의 단일 출처 ──────────────────────────────────────
+   화면 코드에는 색상코드·px 값을 직접 쓰지 않는다. 전부 여기서.
+   색은 정보다: 틸 = "참석 가능·확정", 앰버 = "아쉬움", 잉크 = 내레이션. */
+
+:root {
+  /* 색 — 4 + 상태 2 */
+  --ink: #17191d;          /* 본문 텍스트, 내레이터 배경 */
+  --paper: #eef0f2;        /* 무대 배경 */
+  --surface: #ffffff;      /* 제품 화면 배경 */
+  --surface-dim: #f5f6f7;  /* 카드 안의 카드 */
+  --sub: #737a85;          /* 보조 텍스트 */
+  --line: #e6e8eb;         /* 구분선 (최소한으로) */
+
+  --go: #0b7a63;           /* 틸 — 가능·확정·행동. 이 색이 보이면 "되는 것" */
+  --go-tint: #e4f1ed;
+  --warn: #b45309;         /* 앰버 — 비선호·아쉬움 */
+  --warn-tint: #f9efe3;
+
+  --narrator-text: #f4f5f6;
+  --narrator-sub: #9aa1ab;
+
+  /* 타입 — 4단계, 무게로 성격 */
+  --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --t-display: 800 1.75rem/1.25 var(--font);   /* 28 — 시간 숫자, 내레이션 */
+  --t-title: 700 1.0625rem/1.4 var(--font);    /* 17 — 화면·카드 제목 */
+  --t-body: 400 0.9375rem/1.55 var(--font);    /* 15 — 본문 */
+  --t-cap: 500 0.8125rem/1.45 var(--font);     /* 13 — 캡션·라벨 */
+
+  /* 간격 — 4 그리드 */
+  --s2: 0.5rem;   /* 8 */
+  --s3: 0.75rem;  /* 12 */
+  --s4: 1rem;     /* 16 */
+  --s5: 1.25rem;  /* 20 */
+  --s6: 1.5rem;   /* 24 */
+  --s8: 2rem;     /* 32 */
+
+  /* 모서리 */
+  --r-card: 16px;
+  --r-inner: 12px;
+  --r-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(23, 25, 29, 0.04), 0 4px 16px rgba(23, 25, 29, 0.06);
+  --shadow-phone: 0 24px 64px rgba(23, 25, 29, 0.16);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  font: var(--t-body);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  outline: none;
+  width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--go);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
