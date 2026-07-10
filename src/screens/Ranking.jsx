@@ -101,9 +101,9 @@ export default function Ranking({ people, yourChips, onConfirm }) {
       </div>
 
       <p className="logic-note">
-        <strong>순서는 이렇게 정했어요.</strong> 필수 인원이 안 되는 시간은 제외하고,
-        불참(−40) · 비선호(−12) · 선호(+6)로 점수를 매겼어요. 같은 점수면 이른
-        날짜가 먼저예요.
+        <strong>순서는 이렇게 정했어요.</strong> 전원이 모일 수 있는 시간을 먼저 찾고,
+        필수 인원이 안 되는 시간은 제외했어요. 그 위에 불참(−40) · 비선호(−12) ·
+        선호(+6)로 점수를 매겨요. 같은 점수면 이른 날짜가 먼저예요.
       </p>
     </div>
   )

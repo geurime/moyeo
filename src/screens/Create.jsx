@@ -99,9 +99,9 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
       </section>
 
       <div className="cta-dock">
-        <button className="cta" onClick={onNext}>후보 시간 바로 보기</button>
+        <button className="cta" onClick={onNext}>{people.length - 1}명에게 확인 요청 보내기</button>
         <p className="cta-hint">
-          필수 {requiredCount}명 · 캘린더와 지난 응답이 이미 있어서, 기다림 없이 후보가 나와요
+          확인이 모이는 대로 후보를 만들어요 · 답이 없어도 캘린더 기준으로 반영돼요
         </p>
       </div>
     </div>
