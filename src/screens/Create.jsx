@@ -22,7 +22,6 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
     <div className="product">
       <header className="screen-head">
         <h1 className="screen-title">새 회의</h1>
-        <p className="screen-sub">조건을 알려주면, 모두가 괜찮은 시간을 찾아드려요</p>
       </header>
 
       <div className="field-card">
@@ -64,7 +63,6 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
       <section className="attendees">
         <div className="section-head">
           <h2 className="section-title">참석자 {people.length}명</h2>
-          <p className="section-sub">꼭 와야 하는 사람에게 ‘필수’를 켜주세요 — 시간을 고를 때 기준이 돼요</p>
         </div>
 
         <ul className="person-list">
@@ -138,9 +136,7 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
         <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onNext}>
           {people.length - 1}명에게 확인 요청 보내기
         </motion.button>
-        <p className="cta-hint">
-          확인이 모이는 대로 후보를 만들어요 · 답이 없어도 캘린더 기준으로 반영돼요
-        </p>
+        <p className="cta-hint">답이 없어도 캘린더 기준으로 후보를 만들어요</p>
       </div>
     </div>
   )

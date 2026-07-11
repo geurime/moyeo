@@ -34,7 +34,6 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
       <section className="chips-section">
         <div className="section-head">
           <h2 className="section-title">지난 응답에서 가져왔어요</h2>
-          <p className="section-sub">이번 주는 다르다면, 눌러서 끄면 돼요 — 이번 주만 꺼져요</p>
         </div>
         <div className="chips">
           {YOUR_PROFILE.map((c) => {
@@ -60,7 +59,7 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
       <section className="chips-section">
         <div className="section-head">
           <h2 className="section-title">이번 주만 다른 게 있어요?</h2>
-          <p className="section-sub">피하고 싶은 요일이나 시간대를 눌러주세요 — 이번 회의에만 반영돼요</p>
+          <p className="section-sub">피하고 싶은 요일이나 시간대를 눌러주세요</p>
         </div>
         <div className="chips chips-grid">
           {dayOptions.map((o) => (

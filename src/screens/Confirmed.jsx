@@ -31,8 +31,7 @@ export default function Confirmed({ slot, onReset }) {
         </svg>
         <motion.h1 variants={item} className="screen-title">{when}<br />확정했어요</motion.h1>
         <motion.p variants={item} className="screen-sub">
-          초대장에 <strong>왜 이 시간인지</strong>도 함께 담아 보내요 — 결정에
-          뒷말이 없도록요
+          초대장에 <strong>왜 이 시간인지</strong>도 함께 담아 보내요
         </motion.p>
       </div>
 
