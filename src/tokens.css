@@ -9,7 +9,7 @@
   --surface: #ffffff;      /* 제품 화면 배경 */
   --surface-dim: #f5f6f7;  /* 카드 안의 카드 */
   --sub: #737a85;          /* 보조 텍스트 */
-  --line: #e6e8eb;         /* 구분선 (최소한으로) */
+  --line: rgba(23, 25, 29, 0.07); /* hairline — 경계는 거의 안 보이게 */
 
   --go: #0b7a63;           /* 틸 — 가능·확정·행동. 이 색이 보이면 "되는 것" */
   --go-tint: #e4f1ed;
@@ -40,7 +40,7 @@
   --r-inner: 12px;
   --r-pill: 999px;
 
-  --shadow-card: 0 1px 2px rgba(23, 25, 29, 0.04), 0 4px 16px rgba(23, 25, 29, 0.06);
+  --shadow-card: 0 1px 2px rgba(23, 25, 29, 0.03), 0 6px 20px rgba(23, 25, 29, 0.05);
   --shadow-phone: 0 24px 64px rgba(23, 25, 29, 0.16);
 }
 

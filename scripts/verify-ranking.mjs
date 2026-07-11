@@ -57,6 +57,12 @@ const topAll = rankSlots(PEOPLE, [...YOUR_PROFILE, ...allExceptions])[0]
 check('예외 전부 켜도 1위는 화 10:00 (균일 감점이라 순위 유지)', topAll.day === '화' && topAll.hour === 10,
   `실제: ${topAll.day} ${topAll.hour}:00`)
 
+// 양보 원장: 지연(지난달 양보 1회)의 비선호는 -12가 아니라 -18로 반영
+const thu15 = ranked.find((s) => s.day === '목' && s.hour === 15)
+check('양보 원장 가중 적용 (목 15:00 = -18)', thu15 && thu15.score === -18,
+  thu15 ? `실제: ${thu15.score}` : '슬롯 없음')
+check('원장 가중이 상태에 표시됨', thu15 && thu15.statuses.some((s) => s.ledgerWeighted))
+
 // 준호(미확인)가 랭킹에 반영되는지 — 캘린더 폴백
 const junhoInTop = top && top.statuses.find((s) => s.person.id === 'junho')
 check('미확인자 준호가 캘린더 기준으로 반영됨', junhoInTop && junhoInTop.status === 'calendar-only')

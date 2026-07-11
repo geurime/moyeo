@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { rankSlots, slotReason } from '../ranking.js'
 import { DAYS } from '../data.js'
 
@@ -41,8 +42,15 @@ export default function Ranking({ people, yourChips, onConfirm }) {
           const reason = slotReason(slot, people.length)
           const open = openIndex === i
           const date = DAYS.find((d) => d.key === slot.day)?.date
+          const ledgered = slot.statuses.filter((s) => s.ledgerWeighted)
           return (
-            <article key={`${slot.day}${slot.hour}`} className={`slot-card ${i === 0 ? 'is-top' : ''}`}>
+            <motion.article
+              key={`${slot.day}${slot.hour}`}
+              className={`slot-card ${i === 0 ? 'is-top' : ''}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08, type: 'spring', stiffness: 320, damping: 30 }}
+            >
               <button className="slot-summary" onClick={() => setOpenIndex(open ? -1 : i)} aria-expanded={open}>
                 <div className="slot-head">
                   <span className={`rank-pill ${i === 0 ? 'is-top' : ''}`}>
@@ -55,10 +63,17 @@ export default function Ranking({ people, yourChips, onConfirm }) {
                 </div>
                 <div className="dots-row">
                   <div className="dots">
-                    {slot.statuses.map((s) => (
-                      <span key={s.person.id} className={`dot dot-${s.status}`} title={`${s.person.name} · ${STATUS_LABEL[s.status]}`}>
+                    {slot.statuses.map((s, j) => (
+                      <motion.span
+                        key={s.person.id}
+                        className={`dot dot-${s.status}`}
+                        title={`${s.person.name} · ${STATUS_LABEL[s.status]}`}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: i * 0.08 + 0.12 + j * 0.035, type: 'spring', stiffness: 520, damping: 26 }}
+                      >
                         {s.person.initial}
-                      </span>
+                      </motion.span>
                     ))}
                   </div>
                   <span className={`attend-label ${slot.attendCount === people.length ? 'is-full' : ''}`}>
@@ -70,32 +85,48 @@ export default function Ranking({ people, yourChips, onConfirm }) {
                   {reason.tradeoffs.map((t, j) => (
                     <p key={j} className={`tradeoff tradeoff-${t.kind}`}>{t.text}</p>
                   ))}
+                  {ledgered.map((s) => (
+                    <p key={s.person.id} className="tradeoff tradeoff-ledger">
+                      {s.person.name}님은 {s.person.concessionNote} — 이번엔 더 무겁게 반영했어요
+                    </p>
+                  ))}
                 </div>
               </button>
 
-              {open && (
-                <div className="detail">
-                  <ul className="detail-list">
-                    {slot.statuses.map((s) => (
-                      <li key={s.person.id} className="detail-row">
-                        <span className={`dot dot-sm dot-${s.status}`}>{s.person.initial}</span>
-                        <span className="detail-name">
-                          {s.person.name}
-                          <span className="detail-role">{s.person.required ? '필수' : '선택'}</span>
-                        </span>
-                        <span className={`detail-status status-${s.status}`}>
-                          {s.status === 'reluctant' ? `참석 · ${s.avoids[0]}` : STATUS_LABEL[s.status]}
-                          {s.status === 'ok' && s.prefers.length > 0 && ' · 선호와 맞아요'}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button className="cta" onClick={() => onConfirm(slot)}>
-                    이 시간으로 확정하기
-                  </button>
-                </div>
-              )}
-            </article>
+              <AnimatePresence initial={false}>
+                {open && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 420, damping: 38 }}
+                    style={{ overflow: 'hidden' }}
+                  >
+                    <div className="detail">
+                      <ul className="detail-list">
+                        {slot.statuses.map((s) => (
+                          <li key={s.person.id} className="detail-row">
+                            <span className={`dot dot-sm dot-${s.status}`}>{s.person.initial}</span>
+                            <span className="detail-name">
+                              {s.person.name}
+                              <span className="detail-role">{s.person.required ? '필수' : '선택'}</span>
+                            </span>
+                            <span className={`detail-status status-${s.status}`}>
+                              {s.status === 'reluctant' ? `참석 · ${s.avoids[0]}` : STATUS_LABEL[s.status]}
+                              {s.status === 'ok' && s.prefers.length > 0 && ' · 선호와 맞아요'}
+                              {s.ledgerWeighted && ' · 양보 기록 반영'}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                      <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={() => onConfirm(slot)}>
+                        이 시간으로 확정하기
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.article>
           )
         })}
       </div>
@@ -103,7 +134,8 @@ export default function Ranking({ people, yourChips, onConfirm }) {
       <p className="logic-note">
         <strong>순서는 이렇게 정했어요.</strong> 전원이 모일 수 있는 시간을 먼저 찾고,
         필수 인원이 안 되는 시간은 제외했어요. 그 위에 불참(−40) · 비선호(−12) ·
-        선호(+6)로 점수를 매겨요. 같은 점수면 이른 날짜가 먼저예요.
+        선호(+6)로 점수를 매기고, <strong>지난 회의에서 양보한 사람의 비선호는 한 톤
+        무겁게(×1.5)</strong> 매겨요 — 같은 사람이 반복해서 양보하지 않도록요.
       </p>
     </div>
   )

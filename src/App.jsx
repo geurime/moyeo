@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
@@ -70,54 +71,87 @@ export default function App() {
   const dark = step === 'framing' || step === 'sent' || step === 'collected'
 
   return (
-    <div className="stage">
-      <div className={`phone ${dark ? 'phone-dark' : ''}`}>
-        {viewpoint && <div className="viewpoint">{viewpoint}</div>}
+    <MotionConfig reducedMotion="user">
+      <div className="stage">
+        <div className={`phone ${dark ? 'phone-dark' : ''}`}>
+          <AnimatePresence initial={false}>
+            {viewpoint && (
+              <motion.div
+                className="viewpoint"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={viewpoint}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {viewpoint}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <div className="screen" key={step}>
-          {step === 'framing' && <Framing onNext={next} />}
-          {step === 'create' && (
-            <Create
-              people={people}
-              onTogglePerson={(id) =>
-                setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
-              }
-              onAddPerson={(s) => setPeople((ps) => [...ps, { ...s, isAdded: true }])}
-              onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
-              onNext={next}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              className="screen"
+              key={step}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
+            >
+              {step === 'framing' && <Framing onNext={next} />}
+              {step === 'create' && (
+                <Create
+                  people={people}
+                  onTogglePerson={(id) =>
+                    setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
+                  }
+                  onAddPerson={(s) => setPeople((ps) => [...ps, { ...s, isAdded: true }])}
+                  onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
+                  onNext={next}
+                />
+              )}
+              {(step === 'sent' || step === 'collected') && (
+                <Interstitial narration={NARRATIONS[step]} onNext={next} />
+              )}
+              {step === 'adjust' && (
+                <Adjust
+                  profileOff={profileOff}
+                  exceptions={exceptions}
+                  onToggleProfile={toggleIn(setProfileOff)}
+                  onToggleException={toggleIn(setExceptions)}
+                  onNext={next}
+                />
+              )}
+              {step === 'ranking' && (
+                <Ranking people={people} yourChips={yourChips}
+                  onConfirm={(slot) => { setConfirmedSlot(slot); next() }} />
+              )}
+              {step === 'confirmed' && <Confirmed slot={confirmedSlot} onReset={reset} />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="demo-rail" role="navigation" aria-label="데모 진행">
+          {STEPS.map((s, i) => (
+            <button
+              key={s}
+              className={`demo-dot ${i === stepIndex ? 'is-active' : ''} ${i < stepIndex ? 'is-done' : ''}`}
+              aria-label={`${i + 1}단계로 이동`}
+              onClick={() => setStepIndex(i)}
             />
-          )}
-          {(step === 'sent' || step === 'collected') && (
-            <Interstitial narration={NARRATIONS[step]} onNext={next} />
-          )}
-          {step === 'adjust' && (
-            <Adjust
-              profileOff={profileOff}
-              exceptions={exceptions}
-              onToggleProfile={toggleIn(setProfileOff)}
-              onToggleException={toggleIn(setExceptions)}
-              onNext={next}
-            />
-          )}
-          {step === 'ranking' && (
-            <Ranking people={people} yourChips={yourChips}
-              onConfirm={(slot) => { setConfirmedSlot(slot); next() }} />
-          )}
-          {step === 'confirmed' && <Confirmed slot={confirmedSlot} onReset={reset} />}
+          ))}
+          <button className="demo-reset" onClick={reset}>처음부터</button>
         </div>
       </div>
-
-      <div className="demo-rail" role="navigation" aria-label="데모 진행">
-        {STEPS.map((s, i) => (
-          <button
-            key={s}
-            className={`demo-dot ${i === stepIndex ? 'is-active' : ''} ${i < stepIndex ? 'is-done' : ''}`}
-            aria-label={`${i + 1}단계로 이동`}
-            onClick={() => setStepIndex(i)}
-          />
-        ))}
-        <button className="demo-reset" onClick={reset}>처음부터</button>
-      </div>
-    </div>
+    </MotionConfig>
   )
 }

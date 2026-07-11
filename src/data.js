@@ -24,13 +24,15 @@ export const HOURS = [10, 11, 13, 14, 15, 16]
 
 // responded: 소프트 선호에 응답했는지. 준호는 미응답 —
 // 하드(캘린더)는 자동 수집되므로 미응답이어도 랭킹에 반영된다는 걸 보여주는 장치.
+// concessions: 양보 원장 — 최근 비선호 시간에 확정되거나 불참한 횟수.
+// 원장이 있는 사람의 비선호는 랭킹에서 한 톤 무겁게(−12 → −18) 매겨진다.
 export const PEOPLE = [
   { id: 'jimin',   name: '지민', initial: '지', required: true,  responded: true,  isHost: true },
   { id: 'seoyeon', name: '서연', initial: '서', required: true,  responded: true,  isYou: true },
   { id: 'junho',   name: '준호', initial: '준', required: true,  responded: false },
   { id: 'minsu',   name: '민수', initial: '민', required: true,  responded: true },
   { id: 'haeun',   name: '하은', initial: '하', required: false, responded: true },
-  { id: 'jiyeon',  name: '지연', initial: '연', required: false, responded: true },
+  { id: 'jiyeon',  name: '지연', initial: '연', required: false, responded: true, concessions: 1, concessionNote: '지난달 양보 1회' },
 ]
 
 // 하드 제약 — 사내 캘린더 free/busy에서 자동 수집됐다고 가정하는 데이터.

@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { BUSY, MEETING, YOUR_PROFILE, EXCEPTION_OPTIONS } from '../data.js'
 
 const myBusy = BUSY.seoyeon
@@ -6,6 +7,7 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
   const changes = profileOff.length + exceptions.length
   const dayOptions = EXCEPTION_OPTIONS.filter((o) => o.group === 'day')
   const timeOptions = EXCEPTION_OPTIONS.filter((o) => o.group === 'time')
+  const ctaLabel = changes > 0 ? `보내기 · 이번 주 조정 ${changes}개` : '이대로 좋아요'
 
   return (
     <div className="product">
@@ -38,8 +40,10 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
           {YOUR_PROFILE.map((c) => {
             const off = profileOff.includes(c.id)
             return (
-              <button
+              <motion.button
                 key={c.id}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 600, damping: 30 }}
                 className={`chip ${off ? 'chip-off' : `is-on ${c.kind === 'prefer' ? 'chip-prefer' : ''}`}`}
                 onClick={() => onToggleProfile(c.id)}
                 aria-pressed={!off}
@@ -47,7 +51,7 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
                 {!off && <span className="chip-check" aria-hidden="true">✓</span>}
                 {c.label}
                 <span className="chip-source">{off ? '이번 주는 끔' : c.source}</span>
-              </button>
+              </motion.button>
             )
           })}
         </div>
@@ -60,28 +64,40 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
         </div>
         <div className="chips chips-grid">
           {dayOptions.map((o) => (
-            <button key={o.id}
+            <motion.button key={o.id} whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 600, damping: 30 }}
               className={`chip chip-sm ${exceptions.includes(o.id) ? 'is-on' : ''}`}
               onClick={() => onToggleException(o.id)}
               aria-pressed={exceptions.includes(o.id)}
-            >{o.label}</button>
+            >{o.label}</motion.button>
           ))}
         </div>
         <div className="chips chips-grid">
           {timeOptions.map((o) => (
-            <button key={o.id}
+            <motion.button key={o.id} whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 600, damping: 30 }}
               className={`chip chip-sm ${exceptions.includes(o.id) ? 'is-on' : ''}`}
               onClick={() => onToggleException(o.id)}
               aria-pressed={exceptions.includes(o.id)}
-            >{o.label}</button>
+            >{o.label}</motion.button>
           ))}
         </div>
       </section>
 
       <div className="cta-dock">
-        <button className="cta" onClick={onNext}>
-          {changes > 0 ? `보내기 · 이번 주 조정 ${changes}개` : '이대로 좋아요'}
-        </button>
+        <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onNext}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={ctaLabel}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.14 }}
+            >
+              {ctaLabel}
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
         <p className="cta-hint">반복되는 조정은 학습해서, 다음 회의의 기본값이 돼요</p>
       </div>
     </div>

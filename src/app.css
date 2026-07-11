@@ -37,23 +37,21 @@
 /* 시점 라벨 — 지금 누구의 화면인지 */
 .viewpoint {
   flex: none;
+  background: var(--ink);
+  overflow: hidden;
+}
+.viewpoint span {
+  display: block;
   text-align: center;
   font: var(--t-cap);
   letter-spacing: 0.02em;
   color: var(--narrator-sub);
-  background: var(--ink);
   padding: var(--s2) var(--s4);
 }
 
 .screen {
   flex: 1;
   overflow-y: auto;
-  animation: screen-in 0.32s ease both;
-}
-
-@keyframes screen-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* 데모 진행 레일 (폰 밖) */
@@ -162,14 +160,17 @@
 
 .cta {
   width: 100%;
-  padding: var(--s4);
-  border-radius: var(--r-inner);
+  height: 3.5rem; /* 56 — 토스 CTA 표준 높이 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
   background: var(--go);
   color: #fff;
-  font: var(--t-title);
-  transition: transform 0.12s ease, filter 0.12s ease;
+  font: 600 1.0625rem/1 var(--font); /* semibold — bold는 살짝 두꺼움 */
+  transition: background 0.15s ease;
 }
-.cta:active { transform: scale(0.98); filter: brightness(1.08); }
+.cta:active { background: #086350; }
 
 .cta-light { background: var(--narrator-text); color: var(--ink); }
 
@@ -262,13 +263,15 @@
 
 .person-list { list-style: none; }
 
-.person-row {
+.person-row { overflow: hidden; }
+.person-row + .person-row { border-top: 1px solid var(--line); }
+
+.person-row-inner {
   display: flex;
   align-items: center;
   gap: var(--s3);
   padding: var(--s3) 0;
 }
-.person-row + .person-row { border-top: 1px solid var(--line); }
 
 .avatar {
   width: 36px;
@@ -303,29 +306,41 @@
   padding: 2px var(--s2);
 }
 
+/* 필수/선택 토글 — 슬라이딩 인디케이터가 스프링으로 "딸깍" 이동 */
 .toggle {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 104px;
   background: var(--surface-dim);
   border-radius: var(--r-pill);
   padding: 3px;
+  flex: none;
 }
 .toggle:disabled { opacity: 0.55; cursor: default; }
 
+.toggle-ind {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(23, 25, 29, 0.14);
+}
+
 .toggle-opt {
-  padding: 5px var(--s3);
+  position: relative;
+  padding: 5px 0;
+  text-align: center;
   border-radius: var(--r-pill);
   font: var(--t-cap);
   color: var(--sub);
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, font-weight 0.15s ease;
 }
-.toggle.is-required .toggle-opt:first-child,
-.toggle:not(.is-required) .toggle-opt:last-child {
-  background: var(--surface);
-  color: var(--ink);
-  font-weight: 700;
-  box-shadow: 0 1px 3px rgba(23, 25, 29, 0.12);
-}
-.toggle.is-required .toggle-opt:first-child { color: var(--go); }
+.toggle-opt.is-on { color: var(--ink); font-weight: 700; }
+.toggle.is-required .toggle-opt.is-on { color: var(--go); }
 
 /* ── 화면 2: 응답 ────────────────────────────────── */
 
@@ -606,6 +621,7 @@
 
 .slot-time {
   font: var(--t-display);
+  font-size: 2rem; /* 32 — 시간 숫자가 카드의 주인공 */
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   margin-bottom: var(--s3);
@@ -666,6 +682,7 @@
 .tradeoff-avoid { color: var(--warn); }
 .tradeoff-absent { color: var(--sub); }
 .tradeoff-clear { color: var(--go); }
+.tradeoff-ledger { color: var(--go); font-weight: 600; }
 
 .detail {
   padding: 0 var(--s4) var(--s4);
@@ -767,6 +784,15 @@
 .msg-warn .msg-label { color: var(--warn); }
 
 .msg-body { font: var(--t-body); word-break: keep-all; }
+
+.msg-ledger {
+  font: var(--t-cap);
+  font-weight: 700;
+  color: var(--go);
+  margin-top: var(--s3);
+  padding-top: var(--s3);
+  border-top: 1px solid rgba(23, 25, 29, 0.06);
+}
 
 .end-card {
   background: var(--ink);

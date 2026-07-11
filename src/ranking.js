@@ -1,17 +1,19 @@
 // 랭킹 로직 — 순수 함수. UI와 분리되어 있고, scripts/verify-ranking.mjs로 검증한다.
 //
-// 점수 체계 (설계 문서의 4단계):
+// 점수 체계 (설계 문서의 4단계 + 양보 원장):
 //   필수 인원 하드 충돌   → 슬롯 탈락 (점수 없음)
 //   선택 인원 하드 충돌   → -40  (불참)
-//   소프트 비선호 침해     → -12  (아쉬움)
+//   소프트 비선호 침해     → -12  (아쉬움) · 최근 양보자는 ×1.5 = -18
 //   소프트 선호 일치       → +6   (좋음)
 // 동점이면 주 초반 슬롯 우선 — "기한(다음 주까지) 안에서 빨리 확정"이 낫다는 판단.
+// 양보 원장: 비선호 시간에 확정된 양보는 기록되고, 다음 회의에서 그 사람의
+// 비선호가 더 무겁게 반영된다. 같은 사람이 반복해서 희생되는 걸 구조로 막는다.
 
 import { DAYS, HOURS, BUSY, SOFT_CHIPS, SUGGESTED_BUSY } from './data.js'
 
 const ALL_BUSY = { ...BUSY, ...SUGGESTED_BUSY }
 
-const SCORE = { OPTIONAL_BUSY: -40, AVOID: -12, PREFER: +6 }
+const SCORE = { OPTIONAL_BUSY: -40, AVOID: -12, PREFER: +6, CONCESSION_MULTIPLIER: 1.5 }
 
 export function isBusy(personId, day, hour) {
   return (ALL_BUSY[personId] || []).some((b) => b.day === day && hour >= b.start && hour < b.end)
@@ -37,13 +39,16 @@ export function rankSlots(people, yourChips = []) {
 
         if (busy && p.required) excluded = true
 
+        const hasLedger = (p.concessions || 0) > 0
+
         let status = 'ok' // 참석
         if (busy) {
           status = 'absent' // 불참 (선택 인원)
           score += SCORE.OPTIONAL_BUSY
         } else if (avoids.length > 0) {
           status = 'reluctant' // 참석하지만 비선호
-          score += SCORE.AVOID * avoids.length
+          const weight = hasLedger ? SCORE.CONCESSION_MULTIPLIER : 1
+          score += SCORE.AVOID * avoids.length * weight
         } else {
           score += SCORE.PREFER * prefers.length
         }
@@ -52,6 +57,7 @@ export function rankSlots(people, yourChips = []) {
         statuses.push({
           person: p,
           status,
+          ledgerWeighted: status === 'reluctant' && hasLedger,
           avoids: avoids.map((c) => c.short),
           prefers: prefers.map((c) => c.short),
         })
