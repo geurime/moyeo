@@ -140,7 +140,14 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
                 <span key={w} className={`cal-wd ${i === 0 ? 'is-sun' : ''}`}>{w}</span>
               ))}
             </div>
-            {weeks.map((week, wi) => (
+            {weeks.map((week, wi) => {
+              // 밴드 = 주 행에 깔리는 한 덩어리 — 셀 배경 5조각이면 경계 반픽셀 틈이 생긴다
+              const bandFirst = week.findIndex((d) => d !== null && d >= rangeStart && d <= rangeEnd)
+              let bandLast = bandFirst
+              week.forEach((d, i) => {
+                if (d !== null && d >= rangeStart && d <= rangeEnd) bandLast = i
+              })
+              return (
               <div className="cal-grid" key={wi}>
                 {week.map((d, di) => {
                   if (d === null) return <span key={di} className="cal-day" />
@@ -179,8 +186,22 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
                     </span>
                   )
                 })}
+                {calStage === 2 && bandFirst !== -1 && (
+                  <motion.span
+                    className="cal-band"
+                    style={{
+                      left: `${(bandFirst / 7) * 100}%`,
+                      width: `${((bandLast - bandFirst + 1) / 7) * 100}%`,
+                    }}
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+                    aria-hidden="true"
+                  />
+                )}
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>

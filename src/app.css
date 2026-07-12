@@ -717,6 +717,7 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   margin-bottom: 3px;
+  position: relative; /* 범위 밴드의 기준 */
 }
 .cal-wd {
   font: var(--t-cap);
@@ -733,7 +734,18 @@
   height: 38px;
   display: grid;
   place-items: center;
-  transition: background 0.25s ease, border-radius 0.25s ease; /* 연출 시 밴드가 차오르게 */
+  position: relative;
+  z-index: 1; /* 밴드 위에 숫자가 얹힌다 */
+}
+
+/* 범위 틴트 — 셀 배경이 아니라 주 행에 깔리는 한 덩어리 밴드 */
+.cal-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--go-tint);
+  border-radius: var(--r-pill);
+  transform-origin: left;
 }
 
 .cal-num {
@@ -754,10 +766,7 @@
 .cal-day.is-today .cal-num { box-shadow: inset 0 0 0 1.5px #d9dce0; }
 
 /* 범위 — 연속된 틴트 밴드, 양끝은 필 마커 */
-.cal-day.is-range { background: var(--go-tint); }
 .cal-day.is-range .cal-num { color: var(--go); font-weight: 700; }
-.cal-day.is-range-start { border-radius: var(--r-pill) 0 0 var(--r-pill); }
-.cal-day.is-range-end { border-radius: 0 var(--r-pill) var(--r-pill) 0; }
 .cal-day.is-range-start .cal-num,
 .cal-day.is-range-end .cal-num {
   background: var(--go);
