@@ -13,11 +13,11 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
   const timeOptions = ADJUST_OPTIONS.filter((o) => o.group === 'time')
   const preferOptions = ADJUST_OPTIONS.filter((o) => o.group === 'prefer')
 
-  // 학습 기본값에서 달라진 개수 = 이번 주 조정
+  // 학습 기본값에서 달라진 개수 = 이번 일정의 조정
   const changes =
     chipIds.filter((id) => !LEARNED_IDS.includes(id)).length +
     LEARNED_IDS.filter((id) => !chipIds.includes(id)).length
-  const ctaLabel = changes > 0 ? `보내기 · 이번 주 조정 ${changes}개` : '이대로 좋아요'
+  const ctaLabel = changes > 0 ? `보내기 · 조정 ${changes}개` : '이대로 좋아요'
 
   const chip = (o) => (
     <motion.button
