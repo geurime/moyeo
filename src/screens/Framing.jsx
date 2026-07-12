@@ -2,10 +2,6 @@ export default function Framing({ onNext }) {
   return (
     <div className="narrator">
       <div className="narrator-body">
-        <div className="brand">
-          모여<span className="brand-dot" aria-hidden="true" />
-        </div>
-
         <h1 className="narrator-display">당신은 지민이에요.</h1>
 
         <p className="narrator-p">
@@ -19,7 +15,7 @@ export default function Framing({ onNext }) {
 
       <div className="narrator-foot">
         <button className="cta cta-light" onClick={onNext}>
-          회의 만들기부터 시작
+          일정 만들기부터 시작
         </button>
       </div>
     </div>
