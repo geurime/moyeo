@@ -2,6 +2,10 @@ export default function Framing({ onNext }) {
   return (
     <div className="narrator">
       <div className="narrator-body">
+        <div className="brand">
+          모여<span className="brand-dot" aria-hidden="true" />
+        </div>
+
         <h1 className="narrator-display">당신은 지민이에요.</h1>
 
         <p className="narrator-p">
