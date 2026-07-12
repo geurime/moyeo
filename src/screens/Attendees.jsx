@@ -31,16 +31,16 @@ export default function Attendees({ onNext }) {
   const onRemovePerson = (id) => setPeople((ps) => ps.filter((p) => p.id !== id))
   const onRemoveMany = (ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))
 
-  // 진입 연출 — 지민이 프로덕트팀을 한 명씩 담는 장면
+  // 진입 연출 — 지민이 프로덕트팀 그룹을 탭하는 장면 (실제 동작 그대로: 한 번에 전원)
+  const [pulseGroup, setPulseGroup] = useState(false)
   useEffect(() => {
     const members = COLLEAGUES.filter((c) => GROUPS[0].memberIds.includes(c.id))
-    const ts = members.map((m, i) =>
-      setTimeout(
-        () => setPeople((ps) => (ps.some((p) => p.id === m.id) ? ps : [...ps, { ...m, required: true }])),
-        800 + i * 140
-      )
+    const t1 = setTimeout(() => setPulseGroup(true), 800)
+    const t2 = setTimeout(
+      () => setPeople((ps) => [...ps, ...members.filter((m) => !ps.some((p) => p.id === m.id)).map((c) => ({ ...c, required: true }))]),
+      950
     )
-    return () => ts.forEach(clearTimeout)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
   useEffect(() => {
@@ -139,14 +139,20 @@ export default function Attendees({ onNext }) {
               const allIn = members.every((m) => isIn(m.id))
               return (
                 <li key={g.id} className="person-row">
-                  <button className="person-row-inner person-add-row" onClick={() => toggleGroup(g)} aria-pressed={allIn}>
+                  <motion.button
+                    className="person-row-inner person-add-row"
+                    animate={pulseGroup && g.id === GROUPS[0].id ? { scale: [1, 0.97, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+                    onClick={() => toggleGroup(g)}
+                    aria-pressed={allIn}
+                  >
                     <span className="avatar">{g.name[0]}</span>
                     <span className="person-name">
                       {g.name}
                       <span className="tag">{members.length}명</span>
                     </span>
                     <CheckMark on={allIn} />
-                  </button>
+                  </motion.button>
                 </li>
               )
             })}
