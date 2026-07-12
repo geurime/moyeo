@@ -168,7 +168,7 @@ export default function App() {
                     onConfirm={(slot) => { setConfirmedSlot(slot); next() }} />
                 )}
                 {step === 'confirmed' && (
-                  <Confirmed slot={confirmedSlot} durationMin={durationMin} onReset={reset} />
+                  <Confirmed slot={confirmedSlot} yourChips={yourChips} durationMin={durationMin} onReset={reset} />
                 )}
               </motion.div>
             </AnimatePresence>

@@ -901,16 +901,30 @@
 
 /* ── 화면 4: 확정 ────────────────────────────────── */
 
+/* 확정 = 모두가 받는 회의 요약장 — 세로 중심을 잡고 숨 쉬게 */
 .confirm-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: var(--s6) 0 var(--s6);
+  padding: var(--s8) 0 var(--s6);
+}
+.confirm-title {
+  font: var(--t-title);
+  margin: var(--s5) 0 var(--s2);
 }
 .confirm-over {
   font: var(--t-cap);
   font-weight: 600;
   color: var(--sub);
 }
-.confirm-over.is-date { color: var(--ink); margin-bottom: 2px; }
+.confirm-over.is-date { margin-bottom: 2px; }
+.confirm-time {
+  font: var(--t-display);
+  letter-spacing: -0.02em;
+}
 
 /* 사실 몇 줄 — 시스템의 기록, 감정 연기 없이 */
 .fact-list {
