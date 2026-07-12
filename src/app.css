@@ -822,7 +822,7 @@
   height: 34px;
   font-size: 0.75rem;
 }
-/* 선의 상태 = 확신의 정도: 실선(참석·아쉬움) → 틸 점선(불확실) → 회색 점선+흐림(불참) */
+/* 색 = 방향(틸 온다 / 회색 안 온다), 선 = 확실성(실선 확정 / 점선 미정) */
 .mini-person.is-reluctant .avatar {
   background: var(--surface);
   border: 1.5px solid var(--go);
@@ -830,11 +830,11 @@
 }
 .mini-person.is-unlikely .avatar {
   background: var(--surface);
-  border: 1.5px dashed var(--go);
-  color: var(--go);
+  border: 1.5px dashed #c6cbd1;
+  color: var(--sub);
 }
 .mini-person.is-absent .avatar {
-  border: 1.5px dashed #c6cbd1;
+  border: 1.5px solid #c6cbd1;
   color: var(--sub);
   opacity: 0.5;
 }
