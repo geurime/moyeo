@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { INITIAL_PEOPLE, PEOPLE, ADJUST_OPTIONS, LEARNED_IDS } from './data.js'
+import { INITIAL_PEOPLE, PEOPLE, YOUR_PROFILE } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Attendees from './screens/Attendees.jsx'
@@ -54,24 +54,20 @@ export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
   const [people, setPeople] = useState(INITIAL_PEOPLE) // 시나리오 시작 상태: 프로덕트팀 6명
   const [durationMin, setDurationMin] = useState(60) // 회의 길이(분) — 랭킹에 실반영
-  const [chipIds, setChipIds] = useState(LEARNED_IDS) // 서연의 조건 — 학습값이 기본
   const [confirmedSlot, setConfirmedSlot] = useState(null)
 
   const step = STEPS[stepIndex]
   const panel = PANEL[step]
 
-  // 서연의 이번 주 조건 — 켜진 칩 그대로
-  const yourChips = useMemo(
-    () => ADJUST_OPTIONS.filter((o) => chipIds.includes(o.id)),
-    [chipIds]
-  )
+  // 서연의 조건 = 시나리오 고정값 — 조정 화면의 칩은 눌러볼 수 있지만(화면 내 실동작),
+  // 진행 결과에는 영향을 주지 않아 데모의 기본 경로가 항상 같다
+  const yourChips = YOUR_PROFILE
 
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const reset = () => {
     setStepIndex(0)
     setPeople(INITIAL_PEOPLE)
     setDurationMin(60)
-    setChipIds(LEARNED_IDS)
     setConfirmedSlot(null)
   }
 
@@ -80,9 +76,6 @@ export default function App() {
     if (i >= STEPS.indexOf('adjust') && people.length < 3) setPeople(PEOPLE)
     setStepIndex(i)
   }
-
-  const toggleIn = (setter) => (id) =>
-    setter((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
 
   return (
     <MotionConfig reducedMotion="user">
@@ -155,12 +148,7 @@ export default function App() {
                   />
                 )}
                 {step === 'adjust' && (
-                  <Adjust
-                    durationMin={durationMin}
-                    chipIds={chipIds}
-                    onToggle={toggleIn(setChipIds)}
-                    onNext={next}
-                  />
+                  <Adjust durationMin={durationMin} onNext={next} />
                 )}
                 {step === 'ranking' && (
                   <Ranking people={people} yourChips={yourChips} durationMin={durationMin}

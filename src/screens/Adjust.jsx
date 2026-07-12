@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { BUSY, DAYS, MEETING, ADJUST_OPTIONS } from '../data.js'
+import { BUSY, DAYS, MEETING, ADJUST_OPTIONS, LEARNED_IDS } from '../data.js'
 import { formatMin } from '../ranking.js'
 
 const myBusy = BUSY.seoyeon
@@ -7,8 +8,11 @@ const DAY_START = 10
 const DAY_END = 17
 
 // 화면: 서연의 조정 — 캘린더가 모르는 조건을 확인·조정한다.
-// 분류는 하나(요일 기피 → 시간대 기피 → 시간대 선호), 학습된 값은 미리 체크되어 있다.
-export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
+// 칩은 화면 안에서 실동작하지만(눌러보기), 데모 진행에는 시나리오 고정값이 쓰인다.
+export default function Adjust({ durationMin, onNext }) {
+  const [chipIds, setChipIds] = useState(LEARNED_IDS)
+  const onToggle = (id) =>
+    setChipIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
   const dayOptions = ADJUST_OPTIONS.filter((o) => o.group === 'day')
   const timeOptions = ADJUST_OPTIONS.filter((o) => o.group === 'time')
   const preferOptions = ADJUST_OPTIONS.filter((o) => o.group === 'prefer')
