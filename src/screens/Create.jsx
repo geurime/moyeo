@@ -37,7 +37,7 @@ export default function Create({ onNext }) {
             <motion.span
               className="seg-thumb"
               animate={{ x: `${durationIndex * 100}%` }}
-              transition={SPRING}
+              transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
               aria-hidden="true"
             />
             {DURATIONS.map((d) => (
@@ -58,8 +58,8 @@ export default function Create({ onNext }) {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-                style={{ overflow: 'hidden' }}
+                transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
+                style={{ overflow: 'hidden', display: 'flex', justifyContent: 'center' }}
               >
                 <div className="stepper">
                   <motion.button

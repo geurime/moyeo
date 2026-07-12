@@ -285,7 +285,8 @@
   border: 1px solid var(--line);
   border-radius: var(--r-pill);
   padding: 4px;
-  margin-top: var(--s3);
+  margin: var(--s3) auto 0;
+  align-self: center;
 }
 .stepper-btn {
   width: 32px;
