@@ -246,24 +246,68 @@
 .field input:focus { border-color: var(--go); }
 .field input:focus-visible { outline: none; } /* 밑줄 색 변화가 포커스 표시 역할 */
 
+/* 길이 세그먼트 — 흰 썸이 스프링으로 미끄러지는 4열 컨트롤 */
 .seg {
-  display: flex;
-  gap: 4px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   background: var(--surface-dim);
   border-radius: var(--r-inner);
   padding: 4px;
-  width: fit-content;
+}
+.seg-thumb {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(25% - 2px); /* = (100% - 패딩 8px) / 4 — 칸 폭과 정확히 일치 */
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: 0 1px 4px rgba(23, 25, 29, 0.12);
 }
 .seg-btn {
-  padding: var(--s2) var(--s3);
-  border-radius: 8px;
+  position: relative;
+  padding: var(--s2) 0;
+  text-align: center;
   font: var(--t-cap);
+  font-weight: 500;
   color: var(--sub);
+  transition: color 0.15s ease;
 }
-.seg-btn.is-on {
-  background: var(--ink);
-  color: var(--surface);
-  font-weight: 700;
+.seg-btn.is-on { color: var(--ink); font-weight: 700; }
+
+/* 직접 입력 스테퍼 — 15분 단위, 키보드 없이. 컴팩트한 pill 그룹. */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  width: fit-content;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  padding: 4px;
+  margin-top: var(--s3);
+}
+.stepper-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--surface-dim);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ink);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.stepper-btn:active { background: var(--go-tint); color: var(--go); }
+.stepper-btn:disabled { color: #c6cbd1; background: var(--surface-dim); }
+.stepper-value {
+  font: var(--t-cap);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  min-width: 5.5em;
 }
 
 .person-list { list-style: none; }
@@ -554,28 +598,6 @@
   color: #fff;
   font-weight: 700;
   box-shadow: 0 2px 8px rgba(11, 122, 99, 0.35);
-}
-
-/* 길이 직접 입력 */
-.seg-custom {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font: var(--t-cap);
-  font-weight: 600;
-  color: var(--ink);
-  overflow: hidden;
-  white-space: nowrap;
-  padding-left: 4px;
-}
-.seg-custom-input {
-  width: 2.4em;
-  text-align: center;
-  font: var(--t-cap);
-  font-weight: 700;
-  background: var(--surface-dim);
-  border-radius: 8px;
-  padding: 6px 4px;
 }
 
 /* 섹션 헤더 우측 액션 */

@@ -5,12 +5,19 @@ import { MEETING, CALENDAR } from '../data.js'
 const SPRING = { type: 'spring', stiffness: 700, damping: 35 }
 const DURATIONS = ['30분', '1시간', '90분', '직접']
 
+function formatMin(min) {
+  if (min < 60) return `${min}분`
+  if (min % 60 === 0) return `${min / 60}시간`
+  return `${Math.floor(min / 60)}시간 ${min % 60}분`
+}
+
 export default function Create({ onNext }) {
   const [title, setTitle] = useState(MEETING.title)
   const [duration, setDuration] = useState('1시간')
-  const [customMin, setCustomMin] = useState('75')
+  const [customMin, setCustomMin] = useState(75)
   const [calHint, setCalHint] = useState(false)
   const { weeks, weekdays, monthLabel, rangeStart, rangeEnd, today } = CALENDAR
+  const durationIndex = DURATIONS.indexOf(duration)
 
   return (
     <div className="product">
@@ -27,6 +34,12 @@ export default function Create({ onNext }) {
         <div className="field">
           <span className="field-label">길이</span>
           <div className="seg" role="group" aria-label="회의 길이">
+            <motion.span
+              className="seg-thumb"
+              animate={{ x: `${durationIndex * 100}%` }}
+              transition={SPRING}
+              aria-hidden="true"
+            />
             {DURATIONS.map((d) => (
               <button
                 key={d}
@@ -37,27 +50,53 @@ export default function Create({ onNext }) {
                 {d}
               </button>
             ))}
-            <AnimatePresence initial={false}>
-              {duration === '직접' && (
-                <motion.label
-                  className="seg-custom"
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 'auto', opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={SPRING}
-                >
-                  <input
-                    className="seg-custom-input"
-                    inputMode="numeric"
-                    value={customMin}
-                    onChange={(e) => setCustomMin(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                    aria-label="직접 입력한 길이(분)"
-                  />
-                  분
-                </motion.label>
-              )}
-            </AnimatePresence>
           </div>
+
+          <AnimatePresence initial={false}>
+            {duration === '직접' && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 38 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div className="stepper">
+                  <motion.button
+                    whileTap={{ scale: 0.88 }}
+                    className="stepper-btn"
+                    onClick={() => setCustomMin((m) => Math.max(15, m - 15))}
+                    disabled={customMin <= 15}
+                    aria-label="15분 줄이기"
+                  >
+                    −
+                  </motion.button>
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={customMin}
+                      className="stepper-value"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.12 }}
+                    >
+                      {formatMin(customMin)}
+                    </motion.span>
+                  </AnimatePresence>
+                  <motion.button
+                    whileTap={{ scale: 0.88 }}
+                    className="stepper-btn"
+                    onClick={() => setCustomMin((m) => Math.min(240, m + 15))}
+                    disabled={customMin >= 240}
+                    aria-label="15분 늘리기"
+                  >
+                    +
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {duration !== '1시간' && (
             <p className="picker-hint">데모 후보는 1시간 기준으로 보여드려요</p>
           )}
