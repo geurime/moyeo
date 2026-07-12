@@ -1,41 +1,47 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { rankSlots, slotReason, endLabel } from '../ranking.js'
+import { rankSlots, endLabel } from '../ranking.js'
 import { DAYS } from '../data.js'
 
-const DAY_FULL = { 월: '월요일', 화: '화요일', 수: '수요일', 목: '목요일', 금: '금요일' }
-
-const STATUS_LABEL = {
-  ok: '참석',
-  reluctant: '참석 · 아쉬움',
-  absent: '불참',
-  'calendar-only': '참석',
-}
+const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
 function Shield() {
   return (
     <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
-      <path
-        d="M6 1 L10 2.5 V6 C10 8.5 8.2 10.3 6 11 C3.8 10.3 2 8.5 2 6 V2.5 Z"
-        fill="currentColor"
-        opacity="0.9"
-      />
+      <path d="M6 1 L10 2.5 V6 C10 8.5 8.2 10.3 6 11 C3.8 10.3 2 8.5 2 6 V2.5 Z" fill="currentColor" opacity="0.9" />
       <path d="M4.2 6 L5.5 7.3 L7.9 4.9" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }
 
+// 요약 한 줄 — 이 카드에서 읽어야 할 유일한 문장
+function summarize(slot, total) {
+  const absent = slot.statuses.filter((s) => s.status === 'absent')
+  const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
+  if (absent.length > 0) {
+    return `${absent.map((s) => s.person.name).join('·')}님 불참 · ${slot.attendCount}명 참석`
+  }
+  if (reluctant.length === 1) return `전원 참석 · ${reluctant[0].person.name}님만 아쉬워요`
+  if (reluctant.length > 1) return `전원 참석 · ${reluctant.length}명이 아쉬워요`
+  return `전원 ${total}명 참석 · 모두 괜찮아요`
+}
+
+function statusText(s) {
+  if (s.status === 'absent') return '불참'
+  if (s.status === 'reluctant') return `참석 · ${s.avoids[0]}`
+  if (s.prefers.length > 0) return '참석 · 선호와 맞아요'
+  return '참석'
+}
+
 export default function Ranking({ people, yourChips, durationMin, onReduceDuration, onConfirm }) {
   const ranked = useMemo(() => rankSlots(people, yourChips, durationMin), [people, yourChips, durationMin])
   const top3 = ranked.slice(0, 3)
-  const [openIndex, setOpenIndex] = useState(0)
+  const [selected, setSelected] = useState(0)
 
-  // 빈 상태 대비 — 1시간이면 몇 개가 생기는지 미리 계산해 대안으로 제시
   const hourlyCount = useMemo(
     () => (ranked.length === 0 ? rankSlots(people, yourChips, 60).length : 0),
     [ranked.length, people, yourChips]
   )
-
 
   if (ranked.length === 0) {
     return (
@@ -69,116 +75,78 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
         <p className="screen-sub">5명이 모두 확인한 조건으로 골랐어요</p>
       </header>
 
-      <div className="slot-list">
+      <div className="slot-list" role="radiogroup" aria-label="후보 시간">
         {top3.map((slot, i) => {
-          const reason = slotReason(slot, people.length)
-          const open = openIndex === i
+          const picked = selected === i
           const date = DAYS.find((d) => d.key === slot.day)?.date
-          const ledgered = slot.statuses.filter((s) => s.ledgerWeighted)
           return (
-            <motion.article
+            <motion.div
               key={`${slot.day}${slot.hour}`}
-              className={`slot-card ${i === 0 ? 'is-top' : ''}`}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.07, duration: 0.3, ease: [0.2, 0, 0, 1] }}
+              transition={{ ...EASE, delay: i * 0.06 }}
             >
-              <button className="slot-summary" onClick={() => setOpenIndex(open ? -1 : i)} aria-expanded={open}>
-                <div className="slot-head">
-                  <span className={`rank-pill ${i === 0 ? 'is-top' : ''}`}>
+              <button
+                className={`slot ${picked ? 'is-picked' : ''}`}
+                onClick={() => setSelected(i)}
+                role="radio"
+                aria-checked={picked}
+              >
+                <div className="slot-top">
+                  <span className={`slot-rank ${i === 0 ? 'is-top' : ''}`}>
                     {i === 0 ? '1위 · 추천' : `${i + 1}위`}
                   </span>
-                  <span className="slot-day">{DAY_FULL[slot.day]} {date}</span>
+                  <span className={`slot-radio ${picked ? 'is-on' : ''}`} aria-hidden="true" />
                 </div>
-                <div className="slot-time">
-                  {slot.hour}:00<span className="slot-time-end">–{endLabel(slot.hour, durationMin)}</span>
-                </div>
-                <div className="dots-row">
-                  <div className="dots">
-                    {slot.statuses.map((s, j) => (
-                      <motion.span
-                        key={s.person.id}
-                        className={`dot dot-${s.status}`}
-                        title={`${s.person.name} · ${STATUS_LABEL[s.status]}`}
-                        initial={{ scale: 0.5, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: i * 0.07 + 0.12 + j * 0.03, duration: 0.2, ease: [0.2, 0, 0, 1] }}
-                      >
-                        {s.person.initial}
-                      </motion.span>
-                    ))}
-                  </div>
-                  <span className={`attend-label ${slot.attendCount === people.length ? 'is-full' : ''}`}>
-                    {slot.attendCount}/{people.length} 참석
-                  </span>
-                </div>
-                <div className="reason">
-                  <p className="reason-headline">{reason.headline}</p>
-                  <div className="tag-row">
-                    {slot.statuses.filter((s) => s.status === 'absent').map((s) => (
-                      <span key={s.person.id} className="info-tag">{s.person.name} · 불참</span>
-                    ))}
-                    {slot.statuses.filter((s) => s.status === 'reluctant').map((s) => (
-                      <span key={s.person.id} className="info-tag">{s.person.name} · {s.avoids[0]}</span>
-                    ))}
-                    {ledgered.map((s) => (
-                      <span key={`l-${s.person.id}`} className="info-tag tag-care">
-                        <Shield />
-                        {s.person.name} · 양보 배려
-                      </span>
-                    ))}
-                    {slot.statuses.every((s) => s.status === 'ok' || s.status === 'calendar-only') && (
-                      <span className="info-tag tag-care">아쉬운 사람 없음</span>
-                    )}
-                  </div>
-                </div>
-              </button>
 
-              <AnimatePresence initial={false}>
-                {open && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.26, ease: [0.2, 0, 0, 1] }}
-                    style={{ overflow: 'hidden' }}
-                  >
-                    <div className="detail">
-                      <ul className="detail-list">
+                <div className="slot-when">
+                  <span className="slot-date">{slot.day} {date}</span>
+                  <span className="slot-clock">{slot.hour}:00–{endLabel(slot.hour, durationMin)}</span>
+                </div>
+
+                <p className="slot-note">{summarize(slot, people.length)}</p>
+
+                <AnimatePresence initial={false}>
+                  {picked && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={EASE}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <ul className="mini-list">
                         {slot.statuses.map((s) => (
-                          <li key={s.person.id} className="detail-row">
-                            <span className={`dot dot-sm dot-${s.status}`}>{s.person.initial}</span>
-                            <span className="detail-name">
+                          <li key={s.person.id} className="mini-row">
+                            <span className="mini-name">
                               {s.person.name}
-                              <span className="detail-role">{s.person.required ? '필수' : '선택'}</span>
+                              <span className="mini-role">{s.person.required ? '필수' : '선택'}</span>
                               {s.ledgerWeighted && (
                                 <span className="info-tag tag-care"><Shield />양보 배려</span>
                               )}
                             </span>
-                            <span className={`detail-status status-${s.status}`}>
-                              {s.status === 'reluctant' ? `참석 · ${s.avoids[0]}` : STATUS_LABEL[s.status]}
-                              {s.status === 'ok' && s.prefers.length > 0 && ' · 선호와 맞아요'}
-                            </span>
+                            <span className="mini-status">{statusText(s)}</span>
                           </li>
                         ))}
                       </ul>
-                      <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={() => onConfirm(slot)}>
-                        이 시간으로 확정하기
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.article>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
+            </motion.div>
           )
         })}
       </div>
 
-      <p className="logic-note">
-        <strong>순서는 이렇게 정했어요.</strong> 전원이 모일 수 있는 시간이 먼저예요.
-        필수 인원이 안 되는 시간은 뺐고, 불참은 아쉬움보다 무겁게 봤어요. 그리고
-        지난 회의에서 양보한 사람은 이번에 먼저 배려했어요.
+      <p className="rank-note">
+        필수 인원이 안 되는 시간은 뺐고, 지난번 양보한 사람은 먼저 배려했어요
       </p>
+
+      <div className="cta-dock">
+        <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={() => onConfirm(top3[selected])}>
+          이 시간으로 확정하기
+        </motion.button>
+      </div>
     </div>
   )
 }
