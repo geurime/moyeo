@@ -811,23 +811,8 @@
   border: 1.5px solid var(--go);
 }
 .mini-person.is-absent .avatar {
-  border: 1.5px solid #c6cbd1;
+  border: 1.5px dashed #c6cbd1; /* 점선 = 빈 자리 */
   color: var(--sub);
-}
-.mini-person.is-absent .avatar::after {
-  content: '✕';
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 14px;
-  height: 14px;
-  border-radius: var(--r-pill);
-  background: var(--ink);
-  color: #fff;
-  font-size: 0.5rem;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
 }
 .mini-pname {
   font: var(--t-cap);
