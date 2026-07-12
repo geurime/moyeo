@@ -940,14 +940,15 @@
   letter-spacing: -0.02em;
 }
 
-/* 사실 몇 줄 — 시스템의 기록, 감정 연기 없이 */
+/* 사실 몇 줄 — 자기 컨테이너(카드)를 가진 시스템의 기록 */
 .fact-list {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: var(--s3);
-  padding: var(--s4) var(--s2);
-  border-top: 1px solid var(--line);
+  padding: var(--s4);
+  background: var(--surface-dim);
+  border-radius: var(--r-card);
 }
 .fact-row {
   display: flex;
