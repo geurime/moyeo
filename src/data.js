@@ -107,14 +107,14 @@ export const BUSY = {
 // match(day, hour): 이 슬롯이 해당 조건에 걸리는지.
 export const SOFT_CHIPS = {
   minsu: [
-    { id: 'minsu-am', kind: 'avoid', label: '오전은 집중 업무 시간이에요', short: '오전 비선호', match: (d, h) => h < 12 },
+    { id: 'minsu-am', kind: 'avoid', label: '오전은 집중 업무 시간이에요', short: '오전 비선호', caption: '비선호', match: (d, h) => h < 12 },
   ],
   jiyeon: [
     // group 'day' = 외근류 요일 제약 — 참석 자체가 불확실해지므로 '불참 예상'으로 표시
     { id: 'jiyeon-thu', kind: 'avoid', group: 'day', label: '목요일은 외근이 많아요', short: '목요일 외근', caption: '외근', match: (d) => d === '목' },
   ],
   haeun: [
-    { id: 'haeun-late', kind: 'avoid', label: '16시 이후는 피하고 싶어요', short: '늦은 오후 비선호', match: (d, h) => h >= 16 },
+    { id: 'haeun-late', kind: 'avoid', label: '16시 이후는 피하고 싶어요', short: '늦은 오후 비선호', caption: '비선호', match: (d, h) => h >= 16 },
   ],
   jimin: [],
   junho: [], // 미응답
@@ -125,14 +125,14 @@ export const SOFT_CHIPS = {
 // 시간대는 숫자 대신 기능어: 회사마다 출근 시간이 달라도 어긋나지 않는다.
 // 출근 직후 = 그리드 첫 시간대, 점심 직후 = 점심 다음, 퇴근 전 = 마지막 시간대.
 export const ADJUST_OPTIONS = [
-  { id: 'd-mon', group: 'day', kind: 'avoid', label: '월', short: '월요일 비선호', match: (d) => d === '월' },
-  { id: 'd-tue', group: 'day', kind: 'avoid', label: '화', short: '화요일 비선호', match: (d) => d === '화' },
-  { id: 'd-wed', group: 'day', kind: 'avoid', label: '수', short: '수요일 비선호', match: (d) => d === '수' },
-  { id: 'd-thu', group: 'day', kind: 'avoid', label: '목', short: '목요일 비선호', match: (d) => d === '목' },
-  { id: 'd-fri', group: 'day', kind: 'avoid', label: '금', short: '금요일 비선호', match: (d) => d === '금' },
-  { id: 't-open',  group: 'time', kind: 'avoid', label: '출근 직후', short: '출근 직후 비선호', match: (d, h) => h === 10 },
-  { id: 't-lunch', group: 'time', kind: 'avoid', label: '점심 직후', short: '점심 직후 비선호', match: (d, h) => h === 13 },
-  { id: 't-close', group: 'time', kind: 'avoid', label: '퇴근 전',   short: '퇴근 전 비선호',   match: (d, h) => h === 16 },
+  { id: 'd-mon', group: 'day', kind: 'avoid', label: '월', short: '월요일 비선호', caption: '비선호', match: (d) => d === '월' },
+  { id: 'd-tue', group: 'day', kind: 'avoid', label: '화', short: '화요일 비선호', caption: '비선호', match: (d) => d === '화' },
+  { id: 'd-wed', group: 'day', kind: 'avoid', label: '수', short: '수요일 비선호', caption: '비선호', match: (d) => d === '수' },
+  { id: 'd-thu', group: 'day', kind: 'avoid', label: '목', short: '목요일 비선호', caption: '비선호', match: (d) => d === '목' },
+  { id: 'd-fri', group: 'day', kind: 'avoid', label: '금', short: '금요일 비선호', caption: '비선호', match: (d) => d === '금' },
+  { id: 't-open',  group: 'time', kind: 'avoid', label: '출근 직후', short: '출근 직후 비선호', caption: '비선호', match: (d, h) => h === 10 },
+  { id: 't-lunch', group: 'time', kind: 'avoid', label: '점심 직후', short: '점심 직후 비선호', caption: '비선호', match: (d, h) => h === 13 },
+  { id: 't-close', group: 'time', kind: 'avoid', label: '퇴근 전',   short: '퇴근 전 비선호',   caption: '비선호', match: (d, h) => h === 16 },
   { id: 'p-am', group: 'prefer', kind: 'prefer', label: '오전', short: '오전 선호', match: (d, h) => h < 12 },
   { id: 'p-pm', group: 'prefer', kind: 'prefer', label: '오후', short: '오후 선호', match: (d, h) => h >= 13 },
 ]

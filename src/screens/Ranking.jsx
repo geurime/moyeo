@@ -91,9 +91,8 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                 aria-checked={picked}
               >
                 <div className="slot-top">
-                  <span className={`slot-rank ${i === 0 ? 'is-top' : ''}`}>
-                    {i === 0 ? '1위 · 추천' : `${i + 1}위`}
-                  </span>
+                  {/* 순서는 위치가 말한다 — 라벨은 시스템의 의견(추천) 하나만 */}
+                  <span className="slot-rank is-top">{i === 0 ? '추천' : ''}</span>
                   <span className={`slot-radio ${picked ? 'is-on' : ''}`} aria-hidden="true" />
                 </div>
 
@@ -125,7 +124,6 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                                 <span className="mini-pnote">{s.avoids[0]}</span>
                               )}
                               {s.status === 'absent' && <span className="mini-pnote">일정 겹침</span>}
-                              {s.ledgerWeighted && <span className="mini-pnote is-care">양보</span>}
                             </div>
                           ))}
                       </div>

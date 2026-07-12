@@ -51,7 +51,7 @@ export default function Confirmed({ slot, durationMin, onReset }) {
         <motion.div variants={item} className="msg-card msg-warn" key={s.person.id}>
           <p className="msg-label">{s.person.name}님께는 따로</p>
           <p className="msg-body">
-            ‘{s.avoids[0]}’ 시간인 걸 알아요. 그래도 전원이 모일 수 있는 시간이
+            피하고 싶으신 시간인 걸 알아요. 그래도 전원이 모일 수 있는 시간이
             이때뿐이라 미리 양해를 구해요.
           </p>
           <p className="msg-ledger">
