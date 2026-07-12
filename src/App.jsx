@@ -29,9 +29,9 @@ const PANEL = {
     text: '그룹으로 한 번에, 검색으로 낱낱이. 명단을 만들어요.',
   },
   roles: {
-    name: '꼭 와야 하는 사람',
+    name: '빠져도 되는 사람',
     who: '지민 · 주최자',
-    text: '가중치를 정해요. 역할 기본값은 지난 회의에서 학습돼 있어요.',
+    text: '기본은 전원 필수 — 빠져도 되는 사람만 걸러요. 이번 킥오프는 하은·지연님이 그래요. 두 명을 선택으로 바꿔보세요.',
   },
   adjust: {
     name: '서연의 확인',
@@ -181,5 +181,5 @@ export default function App() {
   )
 }
 
-// 지난 회의 역할 기억으로 추가 — lastRole이 'optional'이면 선택으로
-const withRole = (c) => ({ ...c, required: c.lastRole !== 'optional' })
+// 역할은 회의마다 다르니 학습하지 않는다 — 기본은 전원 필수, 예외만 걸러낸다
+const withRole = (c) => ({ ...c, required: true })

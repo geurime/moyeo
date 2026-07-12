@@ -2,13 +2,13 @@ import { motion } from 'framer-motion'
 
 const EASE = { duration: 0.2, ease: [0.2, 0, 0, 1] }
 
-// 화면 ②: 꼭 와야 하는 사람은? — 가중치 결정.
-// 역할 기본값은 사람별로 학습돼 미리 채워져 있다. 나는 판단 대상이 아니라 명단에서 제외.
+// 화면 ②: 빠져도 괜찮은 사람 거르기 — 회의는 다 오면 좋으니 기본은 전원 필수.
+// 역할은 회의 주제의 함수라 학습하지 않는다. 나는 판단 대상이 아니라 명단에서 제외.
 export default function Roles({ people, onTogglePerson, onNext }) {
   return (
     <div className="product">
       <header className="screen-head">
-        <h1 className="screen-title">꼭 와야 하는 사람은<br />누구예요?</h1>
+        <h1 className="screen-title">빠져도 괜찮은 사람이<br />있나요?</h1>
       </header>
 
       <ul className="person-list">
