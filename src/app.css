@@ -564,56 +564,22 @@
 
 .chips { display: flex; flex-wrap: wrap; gap: var(--s2); }
 
+/* 필터 칩 — 상태는 색 하나로만. 꺼짐 = 회색, 켜짐 = 틸 틴트. 규격 단일. */
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: var(--s3) var(--s4);
+  padding: 10px var(--s4);
   border-radius: var(--r-pill);
-  border: 1.5px solid var(--line);
-  font: var(--t-body);
-  font-weight: 500;
-  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-.chip:active { transform: scale(0.95); }
-
-.chip.is-on {
-  background: var(--warn-tint);
-  border-color: var(--warn);
-  color: var(--warn);
-  font-weight: 700;
-}
-.chip-prefer.is-on {
-  background: var(--go-tint);
-  border-color: var(--go);
-  color: var(--go);
-}
-
-.chip-check { animation: pop 0.18s ease; font-weight: 800; }
-
-/* 조정 화면 — 프로필 칩(미리 켜짐)과 이번 주 예외 칩 */
-.chip-off {
-  border-style: dashed;
-  color: var(--sub);
-  background: transparent;
-}
-
-.chip-source {
+  background: var(--surface-dim);
   font: var(--t-cap);
-  font-size: 0.6875rem;
+  font-size: 0.9375rem;
   font-weight: 500;
-  opacity: 0.75;
+  color: var(--ink);
+  transition: background 0.15s ease, color 0.15s ease;
 }
-
-.chip-sm { padding: var(--s2) var(--s3); font: var(--t-cap); font-weight: 600; }
-.chip-sm.is-on {
-  background: var(--warn-tint);
-  border-color: var(--warn);
-  color: var(--warn);
+.chip.is-on {
+  background: var(--go-tint);
+  color: var(--go);
   font-weight: 700;
 }
-
-.chips-grid + .chips-grid { margin-top: var(--s2); }
 
 /* 기간 피커 */
 .field-picker {
@@ -759,12 +725,6 @@
   place-items: center;
 }
 .remove-btn:hover { color: var(--ink); }
-
-@keyframes pop {
-  0% { transform: scale(0); }
-  70% { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
 
 /* ── 화면 3: 랭킹 (시그니처) ─────────────────────── */
 

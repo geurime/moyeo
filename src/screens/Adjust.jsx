@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { BUSY, MEETING, ADJUST_OPTIONS, LEARNED, LEARNED_IDS } from '../data.js'
+import { BUSY, MEETING, ADJUST_OPTIONS, LEARNED_IDS } from '../data.js'
 import { formatMin } from '../ranking.js'
 
 const myBusy = BUSY.seoyeon
@@ -17,23 +17,17 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
     LEARNED_IDS.filter((id) => !chipIds.includes(id)).length
   const ctaLabel = changes > 0 ? `보내기 · 이번 주 조정 ${changes}개` : '이대로 좋아요'
 
-  const chip = (o, extraClass = '') => {
-    const on = chipIds.includes(o.id)
-    const learned = LEARNED[o.id]
-    return (
-      <motion.button
-        key={o.id}
-        whileTap={{ scale: 0.94 }}
-        className={`chip ${extraClass} ${on ? `is-on ${o.kind === 'prefer' ? 'chip-prefer' : ''}` : ''} ${!on && learned ? 'chip-off' : ''}`}
-        onClick={() => onToggle(o.id)}
-        aria-pressed={on}
-      >
-        {on && <span className="chip-check" aria-hidden="true">✓</span>}
-        {o.label}
-        {learned && <span className="chip-source">{on ? learned : '이번 주는 끔'}</span>}
-      </motion.button>
-    )
-  }
+  const chip = (o) => (
+    <motion.button
+      key={o.id}
+      whileTap={{ scale: 0.94 }}
+      className={`chip ${chipIds.includes(o.id) ? 'is-on' : ''}`}
+      onClick={() => onToggle(o.id)}
+      aria-pressed={chipIds.includes(o.id)}
+    >
+      {o.label}
+    </motion.button>
+  )
 
   return (
     <div className="product">
@@ -61,21 +55,21 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
         <div className="section-head">
           <h2 className="section-title">피하고 싶은 요일</h2>
         </div>
-        <div className="chips chips-grid">{dayOptions.map((o) => chip(o, 'chip-sm'))}</div>
+        <div className="chips">{dayOptions.map(chip)}</div>
       </section>
 
       <section className="chips-section">
         <div className="section-head">
           <h2 className="section-title">피하고 싶은 시간대</h2>
         </div>
-        <div className="chips">{timeOptions.map((o) => chip(o))}</div>
+        <div className="chips">{timeOptions.map(chip)}</div>
       </section>
 
       <section className="chips-section">
         <div className="section-head">
           <h2 className="section-title">이런 시간이 좋아요</h2>
         </div>
-        <div className="chips">{preferOptions.map((o) => chip(o))}</div>
+        <div className="chips">{preferOptions.map(chip)}</div>
       </section>
 
       <div className="cta-dock">
