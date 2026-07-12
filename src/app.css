@@ -306,41 +306,26 @@
   padding: 2px var(--s2);
 }
 
-/* 필수/선택 토글 — 슬라이딩 인디케이터가 스프링으로 "딸깍" 이동 */
-.toggle {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 104px;
-  background: var(--surface-dim);
-  border-radius: var(--r-pill);
-  padding: 3px;
-  flex: none;
-}
-.toggle:disabled { opacity: 0.55; cursor: default; }
-
-.toggle-ind {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  border-radius: var(--r-pill);
-  background: var(--surface);
-  box-shadow: 0 1px 3px rgba(23, 25, 29, 0.14);
-}
-
-.toggle-opt {
-  position: relative;
-  padding: 5px 0;
+/* 필수/선택 상태 칩 — 칩이 곧 상태이자 버튼. 탭하면 전환. */
+.role-chip {
+  width: 60px;
+  padding: 6px 0;
   text-align: center;
   border-radius: var(--r-pill);
   font: var(--t-cap);
+  font-weight: 700;
   color: var(--sub);
-  transition: color 0.15s ease, font-weight 0.15s ease;
+  background: var(--surface-dim);
+  border: 1.5px solid transparent;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  flex: none;
 }
-.toggle-opt.is-on { color: var(--ink); font-weight: 700; }
-.toggle.is-required .toggle-opt.is-on { color: var(--go); }
+.role-chip.is-required {
+  background: var(--go-tint);
+  color: var(--go);
+  border-color: rgba(11, 122, 99, 0.25);
+}
+.role-chip:disabled { opacity: 0.6; cursor: default; }
 
 /* ── 화면 2: 응답 ────────────────────────────────── */
 
@@ -473,53 +458,108 @@
 }
 .picker-chev.is-open { transform: rotate(180deg); }
 
-.picker-options {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  background: var(--surface);
-  border-radius: var(--r-inner);
-  padding: var(--s2);
-  margin-top: var(--s2);
-}
-.picker-opt {
-  text-align: left;
-  padding: var(--s2) var(--s3);
-  border-radius: 8px;
-  font: var(--t-cap);
-  font-weight: 500;
-  color: var(--sub);
-}
-.picker-opt.is-on { color: var(--go); font-weight: 700; background: var(--go-tint); }
-.picker-opt:hover { background: var(--surface-dim); }
-.picker-opt.is-on:hover { background: var(--go-tint); }
 .picker-hint {
   font: var(--t-cap);
   font-size: 0.6875rem;
   color: var(--warn);
-  padding: var(--s2) var(--s3) var(--s2);
+  padding-top: var(--s2);
 }
 
-/* 참석자 추가 */
-.add-area { margin-top: var(--s2); }
-.add-btn {
-  width: 100%;
-  padding: var(--s3);
+/* 기간 캘린더 */
+.cal {
+  background: var(--surface);
   border-radius: var(--r-inner);
-  border: 1.5px dashed var(--line);
+  padding: var(--s3) var(--s3) var(--s3);
+  margin-top: var(--s2);
+}
+.cal-month {
   font: var(--t-cap);
   font-weight: 700;
-  color: var(--sub);
-  transition: border-color 0.15s ease, color 0.15s ease;
+  text-align: center;
+  margin-bottom: var(--s2);
 }
-.add-btn:hover { border-color: var(--go); color: var(--go); }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.cal-wd {
+  font: var(--t-cap);
+  font-size: 0.6875rem;
+  color: var(--sub);
+  text-align: center;
+  padding: var(--s2) 0;
+}
+.cal-day {
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font: var(--t-cap);
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.cal-day.is-muted { color: #c5cad1; }
+.cal-day.is-range {
+  background: var(--go-tint);
+  color: var(--go);
+  font-weight: 700;
+}
+.cal-day.is-range-start {
+  border-radius: 10px 0 0 10px;
+  background: var(--go);
+  color: #fff;
+}
+.cal-day.is-range-end {
+  border-radius: 0 10px 10px 0;
+  background: var(--go);
+  color: #fff;
+}
 
+/* 길이 직접 입력 */
+.seg-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--t-cap);
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  white-space: nowrap;
+  padding-left: 4px;
+}
+.seg-custom-input {
+  width: 2.4em;
+  text-align: center;
+  font: var(--t-cap);
+  font-weight: 700;
+  background: var(--surface-dim);
+  border-radius: 8px;
+  padding: 6px 4px;
+}
+
+/* 섹션 헤더 우측 액션 */
+.section-head-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.head-add {
+  font: var(--t-cap);
+  font-weight: 700;
+  color: var(--go);
+  padding: 4px var(--s2);
+  border-radius: var(--r-pill);
+  transition: background 0.15s ease;
+}
+.head-add:active { background: var(--go-tint); }
+
+/* 참석자 추가 제안 */
 .suggest-list {
   list-style: none;
   background: var(--surface-dim);
   border-radius: var(--r-inner);
   padding: var(--s2) var(--s3);
-  margin-top: var(--s2);
+  margin-bottom: var(--s2);
 }
 .suggest-row {
   display: flex;

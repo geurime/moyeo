@@ -111,10 +111,28 @@ export const EXCEPTION_OPTIONS = [
 ]
 
 // 생성 화면의 '동료 추가' 검색 제안 — 추가하면 랭킹에 실제로 반영된다.
+// 새로 추가되는 사람은 '전원 필수' 기본값을 따른다.
 export const SUGGESTED_PEOPLE = [
-  { id: 'dahye', name: '다혜', initial: '다', required: false, responded: true },
-  { id: 'taeo',  name: '태오', initial: '태', required: false, responded: true },
+  { id: 'dahye', name: '다혜', initial: '다', required: true, responded: true },
+  { id: 'taeo',  name: '태오', initial: '태', required: true, responded: true },
 ]
+
+// 기간 캘린더 (2026년 7월) — 7/1은 수요일. null은 빈 칸, 주말은 비활성.
+export const CALENDAR = {
+  monthLabel: '2026년 7월',
+  weekdays: ['일', '월', '화', '수', '목', '금', '토'],
+  // 주 단위 행. range: 데모 시나리오의 다음 주(13–17).
+  weeks: [
+    [null, null, null, 1, 2, 3, 4],
+    [5, 6, 7, 8, 9, 10, 11],
+    [12, 13, 14, 15, 16, 17, 18],
+    [19, 20, 21, 22, 23, 24, 25],
+    [26, 27, 28, 29, 30, 31, null],
+  ],
+  rangeStart: 13,
+  rangeEnd: 17,
+  today: 12,
+}
 
 export const SUGGESTED_BUSY = {
   dahye: [

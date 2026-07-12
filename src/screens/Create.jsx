@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { MEETING, SUGGESTED_PEOPLE } from '../data.js'
+import { MEETING, SUGGESTED_PEOPLE, CALENDAR } from '../data.js'
 
 const SPRING = { type: 'spring', stiffness: 700, damping: 35 }
 const EXPAND = {
@@ -10,13 +10,17 @@ const EXPAND = {
   transition: { type: 'spring', stiffness: 420, damping: 38 },
 }
 
+const DURATIONS = ['30분', '1시간', '90분', '직접']
+
 export default function Create({ people, onTogglePerson, onAddPerson, onRemovePerson, onNext }) {
   const [title, setTitle] = useState(MEETING.title)
-  const [periodOpen, setPeriodOpen] = useState(false)
-  const [periodHint, setPeriodHint] = useState(false)
+  const [duration, setDuration] = useState('1시간')
+  const [customMin, setCustomMin] = useState('75')
+  const [calOpen, setCalOpen] = useState(false)
+  const [calHint, setCalHint] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
-  const requiredCount = people.filter((p) => p.required).length
   const remaining = SUGGESTED_PEOPLE.filter((s) => !people.some((p) => p.id === s.id))
+  const { weeks, weekdays, monthLabel, rangeStart, rangeEnd, today } = CALENDAR
 
   return (
     <div className="product">
@@ -29,30 +33,88 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
           <span className="field-label">회의 이름</span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="회의 이름" />
         </label>
+
         <div className="field">
           <span className="field-label">길이</span>
           <div className="seg" role="group" aria-label="회의 길이">
-            <button className="seg-btn">30분</button>
-            <button className="seg-btn is-on">1시간</button>
-            <button className="seg-btn">90분</button>
+            {DURATIONS.map((d) => (
+              <button
+                key={d}
+                className={`seg-btn ${duration === d ? 'is-on' : ''}`}
+                onClick={() => setDuration(d)}
+                aria-pressed={duration === d}
+              >
+                {d}
+              </button>
+            ))}
+            <AnimatePresence initial={false}>
+              {duration === '직접' && (
+                <motion.label
+                  className="seg-custom"
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 'auto', opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={SPRING}
+                >
+                  <input
+                    className="seg-custom-input"
+                    inputMode="numeric"
+                    value={customMin}
+                    onChange={(e) => setCustomMin(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                    aria-label="직접 입력한 길이(분)"
+                  />
+                  분
+                </motion.label>
+              )}
+            </AnimatePresence>
           </div>
+          {duration !== '1시간' && (
+            <p className="picker-hint">데모 후보는 1시간 기준으로 보여드려요</p>
+          )}
         </div>
+
         <div className="field">
           <span className="field-label">기간</span>
-          <button className="field-picker" onClick={() => setPeriodOpen(!periodOpen)} aria-expanded={periodOpen}>
+          <button className="field-picker" onClick={() => { setCalOpen(!calOpen); setCalHint(false) }} aria-expanded={calOpen}>
             <span className="field-value">{MEETING.weekLabel}</span>
-            <motion.span className="picker-chev" animate={{ rotate: periodOpen ? 180 : 0 }} transition={SPRING} aria-hidden="true">⌄</motion.span>
+            <motion.span className="picker-chev" animate={{ rotate: calOpen ? 180 : 0 }} transition={SPRING} aria-hidden="true">⌄</motion.span>
           </button>
           <AnimatePresence initial={false}>
-            {periodOpen && (
+            {calOpen && (
               <motion.div {...EXPAND} style={{ overflow: 'hidden' }}>
-                <div className="picker-options">
-                  <button className="picker-opt" onClick={() => setPeriodHint(true)}>이번 주 · 7월 7일(월) – 11일(금)</button>
-                  <button className="picker-opt is-on" onClick={() => { setPeriodOpen(false); setPeriodHint(false) }}>
-                    다음 주 · 7월 13일(월) – 17일(금) ✓
-                  </button>
-                  <button className="picker-opt" onClick={() => setPeriodHint(true)}>날짜 직접 선택</button>
-                  {periodHint && <p className="picker-hint">데모는 ‘다음 주’ 시나리오로 진행돼요</p>}
+                <div className="cal">
+                  <p className="cal-month">{monthLabel}</p>
+                  <div className="cal-grid cal-weekdays" aria-hidden="true">
+                    {weekdays.map((w) => <span key={w} className="cal-wd">{w}</span>)}
+                  </div>
+                  {weeks.map((week, wi) => (
+                    <div className="cal-grid" key={wi}>
+                      {week.map((d, di) => {
+                        if (d === null) return <span key={di} className="cal-day" />
+                        const weekend = di === 0 || di === 6
+                        const inRange = d >= rangeStart && d <= rangeEnd
+                        const past = d < today
+                        return (
+                          <button
+                            key={di}
+                            className={[
+                              'cal-day',
+                              inRange && 'is-range',
+                              d === rangeStart && 'is-range-start',
+                              d === rangeEnd && 'is-range-end',
+                              (weekend || past) && 'is-muted',
+                            ].filter(Boolean).join(' ')}
+                            disabled={weekend || past}
+                            onClick={() => (inRange ? setCalOpen(false) : setCalHint(true))}
+                            aria-label={`7월 ${d}일${inRange ? ' · 선택된 기간' : ''}`}
+                          >
+                            {d}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ))}
+                  {calHint && <p className="picker-hint">데모 데이터는 다음 주(7/13–17) 기준이에요</p>}
                 </div>
               </motion.div>
             )}
@@ -61,9 +123,32 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
       </div>
 
       <section className="attendees">
-        <div className="section-head">
+        <div className="section-head section-head-row">
           <h2 className="section-title">참석자 {people.length}명</h2>
+          {remaining.length > 0 && (
+            <button className="head-add" onClick={() => setSearchOpen(!searchOpen)} aria-expanded={searchOpen}>
+              + 추가
+            </button>
+          )}
         </div>
+
+        <AnimatePresence initial={false}>
+          {searchOpen && remaining.length > 0 && (
+            <motion.div {...EXPAND} style={{ overflow: 'hidden' }}>
+              <ul className="suggest-list">
+                {remaining.map((s) => (
+                  <li key={s.id} className="suggest-row">
+                    <span className="avatar">{s.initial}</span>
+                    <span className="person-name">{s.name}</span>
+                    <motion.button whileTap={{ scale: 0.94 }} className="suggest-add" onClick={() => onAddPerson(s)}>
+                      추가
+                    </motion.button>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <ul className="person-list">
           <AnimatePresence initial={false}>
@@ -85,58 +170,38 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
                       <button className="remove-btn" onClick={() => onRemovePerson(p.id)} aria-label={`${p.name} 제외`}>✕</button>
                     )}
                   </span>
-                  <button
-                    className={`toggle ${p.required ? 'is-required' : ''}`}
+                  <motion.button
+                    whileTap={p.isHost ? undefined : { scale: 0.92 }}
+                    transition={SPRING}
+                    className={`role-chip ${p.required ? 'is-required' : ''}`}
                     onClick={() => onTogglePerson(p.id)}
                     disabled={p.isHost}
                     aria-pressed={p.required}
+                    aria-label={`${p.name} ${p.required ? '필수' : '선택'} 참석 — 눌러서 전환`}
                   >
-                    <motion.span
-                      className="toggle-ind"
-                      animate={{ x: p.required ? '0%' : '100%' }}
-                      transition={SPRING}
-                      aria-hidden="true"
-                    />
-                    <span className={`toggle-opt ${p.required ? 'is-on' : ''}`}>필수</span>
-                    <span className={`toggle-opt ${!p.required ? 'is-on' : ''}`}>선택</span>
-                  </button>
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={p.required ? 'r' : 'o'}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.12 }}
+                      >
+                        {p.required ? '필수' : '선택'}
+                      </motion.span>
+                    </AnimatePresence>
+                  </motion.button>
                 </div>
               </motion.li>
             ))}
           </AnimatePresence>
         </ul>
-
-        {remaining.length > 0 && (
-          <div className="add-area">
-            <button className="add-btn" onClick={() => setSearchOpen(!searchOpen)} aria-expanded={searchOpen}>
-              + 동료 추가
-            </button>
-            <AnimatePresence initial={false}>
-              {searchOpen && (
-                <motion.div {...EXPAND} style={{ overflow: 'hidden' }}>
-                  <ul className="suggest-list">
-                    {remaining.map((s) => (
-                      <li key={s.id} className="suggest-row">
-                        <span className="avatar">{s.initial}</span>
-                        <span className="person-name">{s.name}</span>
-                        <motion.button whileTap={{ scale: 0.94 }} className="suggest-add" onClick={() => onAddPerson(s)}>
-                          추가
-                        </motion.button>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
       </section>
 
       <div className="cta-dock">
         <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onNext}>
           {people.length - 1}명에게 확인 요청 보내기
         </motion.button>
-        <p className="cta-hint">답이 없어도 캘린더 기준으로 후보를 만들어요</p>
       </div>
     </div>
   )
