@@ -1,8 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { BUSY, MEETING, ADJUST_OPTIONS, LEARNED_IDS } from '../data.js'
+import { BUSY, DAYS, MEETING, ADJUST_OPTIONS, LEARNED_IDS } from '../data.js'
 import { formatMin } from '../ranking.js'
 
 const myBusy = BUSY.seoyeon
+const DAY_START = 10
+const DAY_END = 17
 
 // 화면: 서연의 조정 — 캘린더가 모르는 조건을 확인·조정한다.
 // 분류는 하나(요일 기피 → 시간대 기피 → 시간대 선호), 학습된 값은 미리 체크되어 있다.
@@ -36,19 +38,35 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
         <p className="screen-sub">지민님의 {MEETING.title} · {formatMin(durationMin)}</p>
       </header>
 
-      <div className="auto-card">
-        <div className="auto-head">
+      {/* 캘린더 자동 반영 — 텍스트 목록 대신 미니 주간 타임라인.
+          제목 없이 바쁨 블록만: 시스템이 읽는 것도 free/busy뿐이다. */}
+      <div className="autocal" role="img" aria-label={`캘린더 일정 ${myBusy.length}건 자동 반영`}>
+        <div className="autocal-head">
           <span className="auto-check" aria-hidden="true">✓</span>
-          <span className="auto-title">캘린더 일정 {myBusy.length}건 자동 반영</span>
+          <span className="autocal-title">캘린더 일정 {myBusy.length}건이 자동으로 반영됐어요</span>
         </div>
-        <ul className="busy-list">
-          {myBusy.map((b) => (
-            <li key={`${b.day}${b.start}`} className="busy-item">
-              <span className="busy-when">{b.day} {b.start}:00–{b.end}:00</span>
-              <span className="busy-title">{b.title}</span>
-            </li>
+        <div className="autocal-grid">
+          {DAYS.map(({ key: day }, di) => (
+            <div className="autocal-col" key={day}>
+              <div className="autocal-track">
+                {myBusy.filter((b) => b.day === day).map((b) => (
+                  <motion.span
+                    key={b.start}
+                    className="autocal-block"
+                    initial={{ scaleY: 0, opacity: 0 }}
+                    animate={{ scaleY: 1, opacity: 1 }}
+                    transition={{ delay: 0.15 + di * 0.05, duration: 0.3, ease: [0.2, 0, 0, 1] }}
+                    style={{
+                      top: `${((b.start - DAY_START) / (DAY_END - DAY_START)) * 100}%`,
+                      height: `${((b.end - b.start) / (DAY_END - DAY_START)) * 100}%`,
+                    }}
+                  />
+                ))}
+              </div>
+              <span className="autocal-day">{day}</span>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       <section className="chips-section">

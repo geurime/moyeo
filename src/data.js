@@ -67,11 +67,18 @@ export const BUSY = {
     { day: '수', start: 10, end: 11, title: '1:1 미팅' },
     { day: '금', start: 13, end: 17, title: '분기 전략 워크숍' },
   ],
+  // 서연: 현실적인 주간 밀도(9건). 추가 일정은 전부 다른 필수 인원의 일정으로
+  // 이미 탈락한 슬롯에만 있어서 랭킹 결과에는 영향이 없다 (verify로 보증).
   seoyeon: [
+    { day: '월', start: 10, end: 11, title: '주간 계획' },
     { day: '월', start: 13, end: 17, title: '사용자 인터뷰 3건' },
-    { day: '수', start: 11, end: 12, title: '데이터 리뷰' },
+    { day: '화', start: 13, end: 15, title: '디자인 리뷰' },
+    { day: '수', start: 10, end: 12, title: '데이터 리뷰' },
+    { day: '수', start: 13, end: 14, title: '파트너 콜' },
     { day: '수', start: 15, end: 17, title: 'QA 온보딩' },
+    { day: '목', start: 10, end: 12, title: '리서치 정리' },
     { day: '금', start: 10, end: 11, title: '팀 스탠드업' },
+    { day: '금', start: 14, end: 16, title: '스프린트 회고' },
   ],
   junho: [
     { day: '월', start: 15, end: 17, title: '서버 마이그레이션' },
