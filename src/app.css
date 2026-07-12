@@ -773,7 +773,7 @@
 .slot-clock {
   font: var(--t-display);
   font-size: 1.375rem;
-  font-variant-numeric: tabular-nums;
+  /* 비례 숫자 — tabular는 '1'의 광학 여백으로 좌측이 들떠 보임 */
   letter-spacing: -0.01em;
   margin-bottom: 4px;
 }
