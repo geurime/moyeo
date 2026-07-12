@@ -1,14 +1,39 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { BUSY, MEETING, YOUR_PROFILE, EXCEPTION_OPTIONS } from '../data.js'
+import { BUSY, MEETING, ADJUST_OPTIONS, LEARNED, LEARNED_IDS } from '../data.js'
 import { formatMin } from '../ranking.js'
 
 const myBusy = BUSY.seoyeon
 
-export default function Adjust({ durationMin, profileOff, exceptions, onToggleProfile, onToggleException, onNext }) {
-  const changes = profileOff.length + exceptions.length
-  const dayOptions = EXCEPTION_OPTIONS.filter((o) => o.group === 'day')
-  const timeOptions = EXCEPTION_OPTIONS.filter((o) => o.group === 'time')
+// 화면: 서연의 조정 — 캘린더가 모르는 조건을 확인·조정한다.
+// 분류는 하나(요일 기피 → 시간대 기피 → 시간대 선호), 학습된 값은 미리 체크되어 있다.
+export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
+  const dayOptions = ADJUST_OPTIONS.filter((o) => o.group === 'day')
+  const timeOptions = ADJUST_OPTIONS.filter((o) => o.group === 'time')
+  const preferOptions = ADJUST_OPTIONS.filter((o) => o.group === 'prefer')
+
+  // 학습 기본값에서 달라진 개수 = 이번 주 조정
+  const changes =
+    chipIds.filter((id) => !LEARNED_IDS.includes(id)).length +
+    LEARNED_IDS.filter((id) => !chipIds.includes(id)).length
   const ctaLabel = changes > 0 ? `보내기 · 이번 주 조정 ${changes}개` : '이대로 좋아요'
+
+  const chip = (o, extraClass = '') => {
+    const on = chipIds.includes(o.id)
+    const learned = LEARNED[o.id]
+    return (
+      <motion.button
+        key={o.id}
+        whileTap={{ scale: 0.94 }}
+        className={`chip ${extraClass} ${on ? `is-on ${o.kind === 'prefer' ? 'chip-prefer' : ''}` : ''} ${!on && learned ? 'chip-off' : ''}`}
+        onClick={() => onToggle(o.id)}
+        aria-pressed={on}
+      >
+        {on && <span className="chip-check" aria-hidden="true">✓</span>}
+        {o.label}
+        {learned && <span className="chip-source">{on ? learned : '이번 주는 끔'}</span>}
+      </motion.button>
+    )
+  }
 
   return (
     <div className="product">
@@ -34,51 +59,23 @@ export default function Adjust({ durationMin, profileOff, exceptions, onTogglePr
 
       <section className="chips-section">
         <div className="section-head">
-          <h2 className="section-title">지난 응답에서 가져왔어요</h2>
+          <h2 className="section-title">피하고 싶은 요일</h2>
         </div>
-        <div className="chips">
-          {YOUR_PROFILE.map((c) => {
-            const off = profileOff.includes(c.id)
-            return (
-              <motion.button
-                key={c.id}
-                whileTap={{ scale: 0.95 }}
-                className={`chip ${off ? 'chip-off' : `is-on ${c.kind === 'prefer' ? 'chip-prefer' : ''}`}`}
-                onClick={() => onToggleProfile(c.id)}
-                aria-pressed={!off}
-              >
-                {!off && <span className="chip-check" aria-hidden="true">✓</span>}
-                {c.label}
-                <span className="chip-source">{off ? '이번 주는 끔' : c.source}</span>
-              </motion.button>
-            )
-          })}
-        </div>
+        <div className="chips chips-grid">{dayOptions.map((o) => chip(o, 'chip-sm'))}</div>
       </section>
 
       <section className="chips-section">
         <div className="section-head">
-          <h2 className="section-title">이번 주만 다른 게 있어요?</h2>
-          <p className="section-sub">피하고 싶은 요일이나 시간대를 눌러주세요</p>
+          <h2 className="section-title">피하고 싶은 시간대</h2>
         </div>
-        <div className="chips chips-grid">
-          {dayOptions.map((o) => (
-            <motion.button key={o.id} whileTap={{ scale: 0.9 }}
-              className={`chip chip-sm ${exceptions.includes(o.id) ? 'is-on' : ''}`}
-              onClick={() => onToggleException(o.id)}
-              aria-pressed={exceptions.includes(o.id)}
-            >{o.label}</motion.button>
-          ))}
+        <div className="chips">{timeOptions.map((o) => chip(o))}</div>
+      </section>
+
+      <section className="chips-section">
+        <div className="section-head">
+          <h2 className="section-title">이런 시간이 좋아요</h2>
         </div>
-        <div className="chips chips-grid">
-          {timeOptions.map((o) => (
-            <motion.button key={o.id} whileTap={{ scale: 0.9 }}
-              className={`chip chip-sm ${exceptions.includes(o.id) ? 'is-on' : ''}`}
-              onClick={() => onToggleException(o.id)}
-              aria-pressed={exceptions.includes(o.id)}
-            >{o.label}</motion.button>
-          ))}
-        </div>
+        <div className="chips">{preferOptions.map((o) => chip(o))}</div>
       </section>
 
       <div className="cta-dock">

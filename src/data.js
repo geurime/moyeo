@@ -113,25 +113,28 @@ export const SOFT_CHIPS = {
   // 서연(=데모의 '나')의 칩은 응답 화면에서 직접 선택한다.
 }
 
-// 서연의 프로필 — 별도 설정 화면에서 만든 게 아니라, 지난 회의들의 응답이 쌓여
-// 기본값이 된 것. 조정 화면에 미리 켜진 상태로 나타나고, 끄면 '이번 주만' 꺼진다.
-export const YOUR_PROFILE = [
-  { id: 'seoyeon-lunch', kind: 'avoid',  label: '점심 직후는 피하고 싶어요', short: '점심 직후 비선호', source: '지난 응답 3회', match: (d, h) => h === 13 },
-  { id: 'seoyeon-am',    kind: 'prefer', label: '오전이 좋아요',            short: '오전 선호',       source: '지난 응답 2회', match: (d, h) => h < 12 },
+// 조정 화면의 통합 분류 — 요일 기피 × 시간대 기피(하루 리듬 언어) × 시간대 선호.
+// 시간대는 숫자 대신 기능어: 회사마다 출근 시간이 달라도 어긋나지 않는다.
+// 출근 직후 = 그리드 첫 시간대, 점심 직후 = 점심 다음, 퇴근 전 = 마지막 시간대.
+export const ADJUST_OPTIONS = [
+  { id: 'd-mon', group: 'day', kind: 'avoid', label: '월', short: '월요일 비선호', match: (d) => d === '월' },
+  { id: 'd-tue', group: 'day', kind: 'avoid', label: '화', short: '화요일 비선호', match: (d) => d === '화' },
+  { id: 'd-wed', group: 'day', kind: 'avoid', label: '수', short: '수요일 비선호', match: (d) => d === '수' },
+  { id: 'd-thu', group: 'day', kind: 'avoid', label: '목', short: '목요일 비선호', match: (d) => d === '목' },
+  { id: 'd-fri', group: 'day', kind: 'avoid', label: '금', short: '금요일 비선호', match: (d) => d === '금' },
+  { id: 't-open',  group: 'time', kind: 'avoid', label: '출근 직후', short: '출근 직후 비선호', match: (d, h) => h === 10 },
+  { id: 't-lunch', group: 'time', kind: 'avoid', label: '점심 직후', short: '점심 직후 비선호', match: (d, h) => h === 13 },
+  { id: 't-close', group: 'time', kind: 'avoid', label: '퇴근 전',   short: '퇴근 전 비선호',   match: (d, h) => h === 16 },
+  { id: 'p-am', group: 'prefer', kind: 'prefer', label: '오전', short: '오전 선호', match: (d, h) => h < 12 },
+  { id: 'p-pm', group: 'prefer', kind: 'prefer', label: '오후', short: '오후 선호', match: (d, h) => h >= 13 },
 ]
 
-// '이번 주만 달라요' 예외 문법 — 요일 × 시간대. 탭하면 이번 주 한정 감점으로 반영.
-export const EXCEPTION_OPTIONS = [
-  { id: 'ex-mon', group: 'day', label: '월', full: '월요일', match: (d) => d === '월' },
-  { id: 'ex-tue', group: 'day', label: '화', full: '화요일', match: (d) => d === '화' },
-  { id: 'ex-wed', group: 'day', label: '수', full: '수요일', match: (d) => d === '수' },
-  { id: 'ex-thu', group: 'day', label: '목', full: '목요일', match: (d) => d === '목' },
-  { id: 'ex-fri', group: 'day', label: '금', full: '금요일', match: (d) => d === '금' },
-  { id: 'ex-am',    group: 'time', label: '오전',      full: '오전',      match: (d, h) => h < 12 },
-  { id: 'ex-lunch', group: 'time', label: '점심 직후', full: '점심 직후', match: (d, h) => h === 13 },
-  { id: 'ex-pm',    group: 'time', label: '오후',      full: '오후',      match: (d, h) => h >= 13 && h < 16 },
-  { id: 'ex-late',  group: 'time', label: '늦은 오후', full: '늦은 오후', match: (d, h) => h >= 16 },
-]
+// 서연의 학습된 기본값 — 지난 응답들이 쌓여 미리 체크된 상태로 나타난다.
+export const LEARNED = { 't-lunch': '지난 응답 3회', 'p-am': '지난 응답 2회' }
+export const LEARNED_IDS = Object.keys(LEARNED)
+
+// 검증 스크립트용 — 학습 기본값 상태의 칩 목록
+export const YOUR_PROFILE = ADJUST_OPTIONS.filter((o) => LEARNED_IDS.includes(o.id))
 
 
 // 기간 캘린더 (2026년 7월) — 7/1은 수요일. null은 빈 칸, 주말은 비활성.

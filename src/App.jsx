@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { HOST, PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from './data.js'
+import { HOST, PEOPLE, ADJUST_OPTIONS, LEARNED_IDS } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Attendees from './screens/Attendees.jsx'
@@ -38,27 +38,23 @@ export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
   const [people, setPeople] = useState([HOST]) // 명단은 주최자부터 시작해 직접 만든다
   const [durationMin, setDurationMin] = useState(60) // 회의 길이(분) — 랭킹에 실반영
-  const [profileOff, setProfileOff] = useState([]) // 이번 주만 끈 프로필 항목
-  const [exceptions, setExceptions] = useState([]) // 이번 주만 추가한 예외
+  const [chipIds, setChipIds] = useState(LEARNED_IDS) // 서연의 조건 — 학습값이 기본
   const [confirmedSlot, setConfirmedSlot] = useState(null)
 
   const step = STEPS[stepIndex]
 
-  // 서연의 이번 주 조건 = 프로필(안 끈 것) + 이번 주 예외
-  const yourChips = useMemo(() => [
-    ...YOUR_PROFILE.filter((c) => !profileOff.includes(c.id)),
-    ...EXCEPTION_OPTIONS
-      .filter((o) => exceptions.includes(o.id))
-      .map((o) => ({ kind: 'avoid', short: `${o.full} · 이번 주만`, match: o.match })),
-  ], [profileOff, exceptions])
+  // 서연의 이번 주 조건 — 켜진 칩 그대로
+  const yourChips = useMemo(
+    () => ADJUST_OPTIONS.filter((o) => chipIds.includes(o.id)),
+    [chipIds]
+  )
 
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const reset = () => {
     setStepIndex(0)
     setPeople([HOST])
     setDurationMin(60)
-    setProfileOff([])
-    setExceptions([])
+    setChipIds(LEARNED_IDS)
     setConfirmedSlot(null)
   }
 
@@ -158,10 +154,8 @@ export default function App() {
               {step === 'adjust' && (
                 <Adjust
                   durationMin={durationMin}
-                  profileOff={profileOff}
-                  exceptions={exceptions}
-                  onToggleProfile={toggleIn(setProfileOff)}
-                  onToggleException={toggleIn(setExceptions)}
+                  chipIds={chipIds}
+                  onToggle={toggleIn(setChipIds)}
                   onNext={next}
                 />
               )}

@@ -6,7 +6,7 @@
 //   4. 상위 3개의 트레이드오프 사유가 서로 다르다 (카드 다양성)
 //   5. 조정 화면에서 무엇을 켜고 꺼도 1위는 화 10:00 (데모 견고성)
 
-import { PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from '../src/data.js'
+import { PEOPLE, YOUR_PROFILE, ADJUST_OPTIONS } from '../src/data.js'
 import { rankSlots, slotReason } from '../src/ranking.js'
 
 // 데모 기본 상태: 프로필 전부 켜짐, 예외 없음
@@ -51,11 +51,13 @@ const topEmpty = rankSlots(PEOPLE, [])[0]
 check('프로필 전부 꺼도 1위는 화 10:00', topEmpty.day === '화' && topEmpty.hour === 10,
   `실제: ${topEmpty.day} ${topEmpty.hour}:00`)
 
-// 견고성 2: 이번 주 예외를 전부 켠 경우 (모든 요일·시간대 비선호)
-const allExceptions = EXCEPTION_OPTIONS.map((o) => ({ kind: 'avoid', short: `${o.full} · 이번 주만`, match: o.match }))
-const topAll = rankSlots(PEOPLE, [...YOUR_PROFILE, ...allExceptions])[0]
-check('예외 전부 켜도 1위는 화 10:00 (균일 감점이라 순위 유지)', topAll.day === '화' && topAll.hour === 10,
-  `실제: ${topAll.day} ${topAll.hour}:00`)
+// 견고성 2: 조정 칩을 전부 켠 극단 케이스 — 크래시 없이 재계산되고,
+// 서연의 다중 기피(화요일+출근 직후)가 화 10:00을 밀어내 목 15:00이 1위가 되는 게 옳다.
+const rankedAll = rankSlots(PEOPLE, ADJUST_OPTIONS)
+check('칩 전부 켜도 후보가 정상 생성됨', rankedAll.length === 3, `실제: ${rankedAll.length}개`)
+check('칩 전부 켜면 다중 기피가 실반영돼 1위가 목 15:00로 재계산됨',
+  rankedAll[0].day === '목' && rankedAll[0].hour === 15,
+  `실제: ${rankedAll[0].day} ${rankedAll[0].hour}:00`)
 
 // 양보 원장: 지연(지난달 양보 1회)의 비선호는 -12가 아니라 -18로 반영
 const thu15 = ranked.find((s) => s.day === '목' && s.hour === 15)
