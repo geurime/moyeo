@@ -751,12 +751,12 @@
   border-color: var(--go);
 }
 
-.slot-when {
+.slot-over {
   display: flex;
-  align-items: baseline;
-  gap: var(--s2);
-  margin-bottom: 4px;
+  align-items: center;
+  margin-bottom: 2px;
 }
+.slot-date { font: var(--t-cap); font-weight: 600; }
 /* 추천 — 헤드라인 우측의 가벼운 틴트 뱃지 */
 .slot-badge {
   margin-left: auto;
@@ -772,9 +772,10 @@
 }
 .slot-clock {
   font: var(--t-display);
-  font-size: 1.25rem; /* 요일 포함으로 폭 확보 */
+  font-size: 1.375rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  margin-bottom: 4px;
 }
 
 .slot-note { font: var(--t-cap); color: var(--sub); }

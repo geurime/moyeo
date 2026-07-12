@@ -100,12 +100,13 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                 role="radio"
                 aria-checked={picked}
               >
-                {/* 요일·날짜·시간이 한 몸의 헤드라인 — 선택 표시는 카드 테두리가 담당 */}
-                <div className="slot-when">
-                  <span className="slot-clock">
-                    {DAY_FULL[slot.day]} {date} · {slot.hour}:00–{endLabel(slot.hour, durationMin)}
-                  </span>
+                {/* 오버라인(날짜·요일 작게) + 큰 시간 — 크기 차이가 읽는 순서 */}
+                <div className="slot-over">
+                  <span className="slot-date">7월 {date.split('/')[1]}일 {DAY_FULL[slot.day]}</span>
                   {i === 0 && <span className="slot-badge">추천</span>}
+                </div>
+                <div className="slot-clock">
+                  {slot.hour}:00–{endLabel(slot.hour, durationMin)}
                 </div>
 
                 <SummaryNote slot={slot} total={people.length} />
