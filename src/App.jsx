@@ -26,7 +26,7 @@ const PANEL = {
   attendees: {
     name: '참석자',
     who: '지민 · 주최자',
-    text: '그룹으로 한 번에, 검색으로 낱낱이. 명단을 만들어요.',
+    text: '그룹과 검색으로 명단을 만들어요.',
   },
   roles: {
     name: '빠져도 되는 사람',
