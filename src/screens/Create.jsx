@@ -144,12 +144,11 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
               <div className="cal-grid" key={wi}>
                 {week.map((d, di) => {
                   if (d === null) return <span key={di} className="cal-day" />
-                  // 연출 단계에 따라 범위가 채워진다: 없음 → 13 → 13~17
-                  const inRange =
-                    calStage === 2 ? d >= rangeStart && d <= rangeEnd
-                    : calStage === 1 ? d === rangeStart
-                    : false
-                  const isEdge = inRange && (d === rangeStart || d === rangeEnd)
+                  // 연출: 13 클릭 = 원 마커만 → 17 클릭 때 밴드(틴트)가 이어진다
+                  const banded = calStage === 2 && d >= rangeStart && d <= rangeEnd
+                  const isEdge =
+                    (calStage >= 1 && d === rangeStart) || (calStage === 2 && d === rangeEnd)
+                  const inRange = banded || isEdge
                   const num = isEdge ? (
                     <motion.span
                       className="cal-num"
@@ -167,8 +166,8 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
                       key={di}
                       className={[
                         'cal-day',
-                        inRange && 'is-range',
-                        inRange && d === rangeStart && 'is-range-start',
+                        banded && 'is-range', // 틴트 밴드는 범위 완성 후에만
+                        isEdge && d === rangeStart && 'is-range-start',
                         ((calStage === 2 && d === rangeEnd) || (calStage === 1 && d === rangeStart)) && 'is-range-end',
                         di === 0 && 'is-sun',
                         !inRange && 'is-muted', // 기한 밖 날짜는 선택 불가
