@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { INITIAL_PEOPLE, PEOPLE, YOUR_PROFILE } from './data.js'
+import { PEOPLE, YOUR_PROFILE } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Attendees from './screens/Attendees.jsx'
@@ -52,30 +52,24 @@ const PANEL = {
 
 export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
-  const [people, setPeople] = useState(INITIAL_PEOPLE) // 시나리오 시작 상태: 프로덕트팀 6명
   const [durationMin, setDurationMin] = useState(60) // 회의 길이(분) — 랭킹에 실반영
   const [confirmedSlot, setConfirmedSlot] = useState(null)
 
   const step = STEPS[stepIndex]
   const panel = PANEL[step]
 
-  // 서연의 조건 = 시나리오 고정값 — 조정 화면의 칩은 눌러볼 수 있지만(화면 내 실동작),
-  // 진행 결과에는 영향을 주지 않아 데모의 기본 경로가 항상 같다
+  // 진행 결과는 항상 시나리오 고정값 — 각 화면의 연출·조작은 그 화면의 로컬 상태.
+  // 어떤 경로로 눌러도 기본 경로의 후보·확정은 동일하다.
+  const people = PEOPLE
   const yourChips = YOUR_PROFILE
 
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const reset = () => {
     setStepIndex(0)
-    setPeople(INITIAL_PEOPLE)
     setDurationMin(60)
     setConfirmedSlot(null)
   }
-
-  // 목차로 뒤 단계에 바로 점프할 때 — 명단이 비어 있으면 시나리오 상태로 채운다
-  const jumpTo = (i) => {
-    if (i >= STEPS.indexOf('adjust') && people.length < 3) setPeople(PEOPLE)
-    setStepIndex(i)
-  }
+  const jumpTo = (i) => setStepIndex(i)
 
   return (
     <MotionConfig reducedMotion="user">
@@ -128,25 +122,8 @@ export default function App() {
                 {step === 'create' && (
                   <Create durationMin={durationMin} onChangeDuration={setDurationMin} onNext={next} />
                 )}
-                {step === 'attendees' && (
-                  <Attendees
-                    people={people}
-                    onAddPerson={(c) => setPeople((ps) => [...ps, withRole(c)])}
-                    onAddMany={(cs) => setPeople((ps) => [...ps, ...cs.map(withRole)])}
-                    onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
-                    onRemoveMany={(ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))}
-                    onNext={next}
-                  />
-                )}
-                {step === 'roles' && (
-                  <Roles
-                    people={people}
-                    onTogglePerson={(id) =>
-                      setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
-                    }
-                    onNext={next}
-                  />
-                )}
+                {step === 'attendees' && <Attendees onNext={next} />}
+                {step === 'roles' && <Roles onNext={next} />}
                 {step === 'adjust' && (
                   <Adjust durationMin={durationMin} onNext={next} />
                 )}
@@ -168,6 +145,3 @@ export default function App() {
     </MotionConfig>
   )
 }
-
-// 역할은 회의마다 다르니 학습하지 않는다 — 기본은 전원 필수, 예외만 걸러낸다
-const withRole = (c) => ({ ...c, required: true })

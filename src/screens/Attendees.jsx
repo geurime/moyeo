@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { COLLEAGUES, GROUPS } from '../data.js'
+import { HOST, COLLEAGUES, GROUPS } from '../data.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
@@ -18,11 +18,30 @@ function CheckMark({ on }) {
 
 // 화면 ①: 참석자 — 명단 만들기.
 // 리스트는 불변, 상태만 토글(체크). 그룹은 멤버 전원 토글. 스트립은 요약 + 빠른 제거.
-export default function Attendees({ people, onAddPerson, onAddMany, onRemovePerson, onRemoveMany, onNext }) {
+// 상태는 로컬: 연출·조작 모두 화면 안의 일이고, 진행 결과는 시나리오 고정값이 쓰인다.
+export default function Attendees({ onNext }) {
+  const [people, setPeople] = useState([HOST])
   const [query, setQuery] = useState('')
   const [stuck, setStuck] = useState(false) // 리스트가 고정 헤더 밑을 지나는 중인지
   const stripRef = useRef(null)
   const sentinelRef = useRef(null)
+
+  const onAddPerson = (c) => setPeople((ps) => [...ps, { ...c, required: true }])
+  const onAddMany = (cs) => setPeople((ps) => [...ps, ...cs.map((c) => ({ ...c, required: true }))])
+  const onRemovePerson = (id) => setPeople((ps) => ps.filter((p) => p.id !== id))
+  const onRemoveMany = (ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))
+
+  // 진입 연출 — 지민이 프로덕트팀을 한 명씩 담는 장면
+  useEffect(() => {
+    const members = COLLEAGUES.filter((c) => GROUPS[0].memberIds.includes(c.id))
+    const ts = members.map((m, i) =>
+      setTimeout(
+        () => setPeople((ps) => (ps.some((p) => p.id === m.id) ? ps : [...ps, { ...m, required: true }])),
+        800 + i * 140
+      )
+    )
+    return () => ts.forEach(clearTimeout)
+  }, [])
 
   useEffect(() => {
     const el = sentinelRef.current

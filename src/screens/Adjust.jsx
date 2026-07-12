@@ -55,7 +55,7 @@ export default function Adjust({ durationMin, onNext }) {
       <div className="autocal" role="img" aria-label={`캘린더 일정 ${myBusy.length}건 자동 반영`}>
         <div className="autocal-head">
           <span className="auto-check" aria-hidden="true">✓</span>
-          <span className="autocal-title">캘린더 일정 {myBusy.length}건이 자동으로 반영됐어요</span>
+          <span className="autocal-title">일정 {myBusy.length}건이 자동으로 반영됐어요</span>
         </div>
         <div className="autocal-grid">
           {DAYS.map(({ key: day }, di) => (
