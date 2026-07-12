@@ -781,17 +781,6 @@
 .slot-note { font: var(--t-cap); color: var(--sub); }
 .note-head { color: var(--ink); font-weight: 700; }
 .note-head.is-full { color: var(--go); }
-.role-tag {
-  display: inline-block;
-  margin: 0 2px;
-  padding: 0 5px;
-  border: 1px solid #d9dce0;
-  border-radius: 5px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: var(--sub);
-  vertical-align: 1px;
-}
 
 /* 선택된 카드의 상세 — 아바타 스트립 + 제자리 주석. 예외만 캡션. */
 .mini-strip {
