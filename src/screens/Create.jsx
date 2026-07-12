@@ -43,7 +43,7 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
         </label>
 
         <div className="field">
-          <span className="field-label">길이</span>
+          <span className="field-label">소요 시간</span>
           <div className="seg" role="group" aria-label="회의 길이">
             <motion.span
               className="seg-thumb"
@@ -110,7 +110,7 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
         </div>
 
         <div className="field">
-          <span className="field-label">기간</span>
+          <span className="field-label">날짜</span>
           <div className="cal">
             <div className="cal-head">
               <button className="cal-nav-btn" disabled aria-label="이전 달">‹</button>
