@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { HOST, PEOPLE, ADJUST_OPTIONS, LEARNED_IDS } from './data.js'
+import { INITIAL_PEOPLE, PEOPLE, ADJUST_OPTIONS, LEARNED_IDS } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Attendees from './screens/Attendees.jsx'
@@ -26,7 +26,7 @@ const PANEL = {
   attendees: {
     name: '참석자',
     who: '지민 · 주최자',
-    text: '그룹과 검색으로 명단을 만들어요.',
+    text: '프로덕트팀 6명이 모이는 회의예요. 명단은 그룹과 검색으로 바꿀 수 있어요.',
   },
   roles: {
     name: '빠져도 되는 사람',
@@ -52,7 +52,7 @@ const PANEL = {
 
 export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
-  const [people, setPeople] = useState([HOST]) // 명단은 주최자부터 시작해 직접 만든다
+  const [people, setPeople] = useState(INITIAL_PEOPLE) // 시나리오 시작 상태: 프로덕트팀 6명
   const [durationMin, setDurationMin] = useState(60) // 회의 길이(분) — 랭킹에 실반영
   const [chipIds, setChipIds] = useState(LEARNED_IDS) // 서연의 조건 — 학습값이 기본
   const [confirmedSlot, setConfirmedSlot] = useState(null)
@@ -69,7 +69,7 @@ export default function App() {
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const reset = () => {
     setStepIndex(0)
-    setPeople([HOST])
+    setPeople(INITIAL_PEOPLE)
     setDurationMin(60)
     setChipIds(LEARNED_IDS)
     setConfirmedSlot(null)

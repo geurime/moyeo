@@ -49,7 +49,13 @@ export const GROUPS = [
 // 지난 킥오프 멤버 — 시나리오 명단 구성용.
 export const LAST_MEETING_IDS = ['seoyeon', 'junho', 'minsu', 'haeun', 'jiyeon']
 
-// 시나리오 완성 상태의 6인 명단 — 검증 스크립트와 데모 점프(도트 이동)용.
+// 데모 시작 상태 — 시나리오상 프로덕트팀 6명이 모이는 회의 (역할은 아직 전원 필수).
+export const INITIAL_PEOPLE = [
+  HOST,
+  ...COLLEAGUES.filter((c) => GROUPS[0].memberIds.includes(c.id)).map((c) => ({ ...c, required: true })),
+]
+
+// 시나리오 완성 상태의 6인 명단 — 검증 스크립트와 데모 점프(목차 이동)용.
 export const PEOPLE = [
   HOST,
   ...COLLEAGUES.filter((c) => LAST_MEETING_IDS.includes(c.id)).map((c) => ({
