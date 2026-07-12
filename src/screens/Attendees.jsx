@@ -31,16 +31,15 @@ export default function Attendees({ onNext }) {
   const onRemovePerson = (id) => setPeople((ps) => ps.filter((p) => p.id !== id))
   const onRemoveMany = (ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))
 
-  // 진입 연출 — 지민이 프로덕트팀 그룹을 탭하는 장면 (실제 동작 그대로: 한 번에 전원)
-  const [pulseGroup, setPulseGroup] = useState(false)
+  // 진입 연출 — 지민이 프로덕트팀 그룹을 탭한 결과 그대로: 한 번에 전원 추가.
+  // 행에는 원래 프레스 피드백이 없으므로 상태 변화(체크·스트립)만 일어난다.
   useEffect(() => {
     const members = COLLEAGUES.filter((c) => GROUPS[0].memberIds.includes(c.id))
-    const t1 = setTimeout(() => setPulseGroup(true), 800)
-    const t2 = setTimeout(
+    const t = setTimeout(
       () => setPeople((ps) => [...ps, ...members.filter((m) => !ps.some((p) => p.id === m.id)).map((c) => ({ ...c, required: true }))]),
-      950
+      900
     )
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+    return () => clearTimeout(t)
   }, [])
 
   useEffect(() => {
@@ -139,10 +138,8 @@ export default function Attendees({ onNext }) {
               const allIn = members.every((m) => isIn(m.id))
               return (
                 <li key={g.id} className="person-row">
-                  <motion.button
+                  <button
                     className="person-row-inner person-add-row"
-                    animate={pulseGroup && g.id === GROUPS[0].id ? { scale: [1, 0.97, 1] } : { scale: 1 }}
-                    transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
                     onClick={() => toggleGroup(g)}
                     aria-pressed={allIn}
                   >
@@ -152,7 +149,7 @@ export default function Attendees({ onNext }) {
                       <span className="tag">{members.length}명</span>
                     </span>
                     <CheckMark on={allIn} />
-                  </motion.button>
+                  </button>
                 </li>
               )
             })}
