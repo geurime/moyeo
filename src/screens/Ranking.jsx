@@ -5,21 +5,31 @@ import { DAYS } from '../data.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
-// 요약 한 줄 — 고정 문형: [참석 현황] · [설명]
-function summarize(slot, total) {
+// 요약 한 줄 — 고정 문형: [참석 현황(강조)] · [설명(그레이)]
+function SummaryNote({ slot, total }) {
   const absent = slot.statuses.filter((s) => s.status === 'absent')
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
   const sure = total - absent.length
+  const full = absent.length === 0
 
-  const parts = [absent.length === 0 ? '전원 참석' : `${sure}명 참석`]
+  const tail = []
   for (const s of absent) {
-    // 불참자의 역할(선택)은 "그래서 괜찮다"의 근거 — 요약에서 바로 답한다
-    parts.push(`${s.person.name}님${s.person.required ? '' : '(선택)'} 불참`)
+    tail.push(
+      <span key={s.person.id}>
+        {' · '}{s.person.name}님{!s.person.required && <span className="role-tag">선택</span>} 불참
+      </span>
+    )
   }
-  if (reluctant.length === 1) parts.push(`${reluctant[0].person.name}님이 아쉬워요`)
-  if (reluctant.length > 1) parts.push(`${reluctant.length}명이 아쉬워요`)
-  if (parts.length === 1) parts.push('모두 괜찮아요')
-  return parts.join(' · ')
+  if (reluctant.length === 1) tail.push(<span key="r"> · {reluctant[0].person.name}님이 아쉬워요</span>)
+  if (reluctant.length > 1) tail.push(<span key="r"> · {reluctant.length}명이 아쉬워요</span>)
+  if (tail.length === 0) tail.push(<span key="r"> · 모두 괜찮아요</span>)
+
+  return (
+    <p className="slot-note">
+      <strong className={`note-head ${full ? 'is-full' : ''}`}>{full ? '전원 참석' : `${sure}명 참석`}</strong>
+      {tail}
+    </p>
+  )
 }
 
 function statusText(s) {
@@ -96,7 +106,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                   {i === 0 && <span className="slot-badge">추천</span>}
                 </div>
 
-                <p className="slot-note">{summarize(slot, people.length)}</p>
+                <SummaryNote slot={slot} total={people.length} />
 
                 <AnimatePresence initial={false}>
                   {picked && (
