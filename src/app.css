@@ -795,29 +795,32 @@
 
 .slot-note { font: var(--t-cap); color: var(--sub); }
 
-/* 선택된 카드에서만 펼쳐지는 6인 상세 — 텍스트 행 */
+/* 선택된 카드에서만 펼쳐지는 상세 — 결과로 그룹, 예외만 풀어쓴다 */
 .mini-list {
-  list-style: none;
   margin-top: var(--s3);
+  padding-top: var(--s3);
   border-top: 1px solid var(--line);
-}
-.mini-row {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: var(--s3);
-  padding: 9px 0;
 }
-.mini-row + .mini-row { border-top: 1px solid var(--line); }
-.mini-name {
-  display: inline-flex;
+.mini-group { display: flex; flex-direction: column; gap: 3px; }
+.mini-label {
+  font: var(--t-cap);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--sub);
+}
+.mini-label.label-in { color: var(--go); }
+.mini-label-sub { font-weight: 500; color: var(--sub); }
+.mini-names { font: var(--t-cap); font-weight: 600; }
+.mini-exception {
+  display: flex;
   align-items: center;
   gap: 6px;
   font: var(--t-cap);
-  font-weight: 700;
+  font-weight: 600;
 }
-.mini-role { font-weight: 500; color: var(--sub); }
-.mini-status { font: var(--t-cap); color: var(--sub); }
 
 .info-tag {
   display: inline-flex;
@@ -833,12 +836,6 @@
 }
 .info-tag.tag-care { border-color: rgba(11, 122, 99, 0.3); color: var(--go); }
 
-.rank-note {
-  font: var(--t-cap);
-  color: var(--sub);
-  margin: var(--s4) 0 var(--s2);
-  word-break: keep-all;
-}
 
 /* 빈 상태 — 후보가 없을 때, 멈추지 않고 대안을 제시 */
 .empty-card {

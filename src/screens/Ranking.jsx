@@ -105,40 +105,57 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                 <p className="slot-note">{summarize(slot, people.length)}</p>
 
                 <AnimatePresence initial={false}>
-                  {picked && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={EASE}
-                      style={{ overflow: 'hidden' }}
-                    >
-                      <ul className="mini-list">
-                        {slot.statuses.map((s) => (
-                          <li key={s.person.id} className="mini-row">
-                            <span className="mini-name">
-                              {s.person.name}
-                              <span className="mini-role">{s.person.required ? '필수' : '선택'}</span>
-                              {s.ledgerWeighted && (
-                                <span className="info-tag tag-care">양보</span>
-                              )}
-                            </span>
-                            <span className="mini-status">{statusText(s)}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </motion.div>
-                  )}
+                  {picked && (() => {
+                    const bySort = [...slot.statuses].sort((a, b) => (b.person.required ? 1 : 0) - (a.person.required ? 1 : 0))
+                    const attending = bySort.filter((s) => s.status === 'ok' || s.status === 'calendar-only')
+                    const reluctant = bySort.filter((s) => s.status === 'reluctant')
+                    const out = bySort.filter((s) => s.status === 'unlikely' || s.status === 'absent')
+                    const attendTotal = attending.length + reluctant.length
+                    const requiredAllIn = bySort.filter((s) => s.person.required).every((s) => s.status !== 'absent')
+                    return (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={EASE}
+                        style={{ overflow: 'hidden' }}
+                      >
+                        <div className="mini-list">
+                          <div className="mini-group">
+                            <p className="mini-label label-in">
+                              참석 {attendTotal}{requiredAllIn && <span className="mini-label-sub"> · 필수 전원</span>}
+                            </p>
+                            <p className="mini-names">{attending.map((s) => s.person.name).join(' · ')}</p>
+                            {reluctant.map((s) => (
+                              <p key={s.person.id} className="mini-exception">
+                                {s.person.name} · {s.avoids[0]}
+                                {s.ledgerWeighted && <span className="info-tag tag-care">양보</span>}
+                              </p>
+                            ))}
+                          </div>
+                          {out.length > 0 && (
+                            <div className="mini-group">
+                              <p className="mini-label">
+                                {out.some((s) => s.status === 'absent') ? '불참' : '불참 예상'} {out.length}
+                              </p>
+                              {out.map((s) => (
+                                <p key={s.person.id} className="mini-exception">
+                                  {s.person.name} ({s.person.required ? '필수' : '선택'}) · {s.status === 'absent' ? '일정 겹침' : s.avoids[0]}
+                                  {s.ledgerWeighted && <span className="info-tag tag-care">양보</span>}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )
+                  })()}
                 </AnimatePresence>
               </button>
             </motion.div>
           )
         })}
       </div>
-
-      <p className="rank-note">
-        필수 인원이 안 되는 시간은 뺐고, 지난번 양보한 사람은 먼저 배려했어요
-      </p>
 
       <div className="cta-dock">
         <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={() => onConfirm(top3[selected])}>
