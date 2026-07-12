@@ -909,7 +909,24 @@
   font: var(--t-cap);
   font-weight: 600;
   color: var(--sub);
-  margin-bottom: 2px;
+}
+.confirm-over.is-date { color: var(--ink); margin-bottom: 2px; }
+
+/* 사실 몇 줄 — 시스템의 기록, 감정 연기 없이 */
+.fact-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+  padding: var(--s4) var(--s2);
+  border-top: 1px solid var(--line);
+}
+.fact-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font: var(--t-body);
+  font-weight: 600;
 }
 
 .check { width: 64px; height: 64px; margin-bottom: var(--s4); }
