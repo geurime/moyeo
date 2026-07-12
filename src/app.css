@@ -733,6 +733,7 @@
   height: 38px;
   display: grid;
   place-items: center;
+  transition: background 0.25s ease, border-radius 0.25s ease; /* 연출 시 밴드가 차오르게 */
 }
 
 .cal-num {

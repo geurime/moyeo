@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { MEETING, CALENDAR } from '../data.js'
 import { formatMin } from '../ranking.js'
@@ -17,8 +17,24 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
   const [title, setTitle] = useState(MEETING.title)
   const presetIndex = DURATIONS.findIndex((d) => d.min === durationMin)
   const [custom, setCustom] = useState(presetIndex === -1)
-  const segIndex = custom ? 3 : presetIndex
   const { weeks, weekdays, monthLabel, rangeStart, rangeEnd, today } = CALENDAR
+
+  // 진입 연출 — 지민이 채우는 장면: 제목 → 소요 시간(30분→1시간) → 날짜(13→17).
+  // 전부 표시 상태만 바꿔서 durationMin 등 실제 데이터는 오염되지 않는다.
+  const [titleVisible, setTitleVisible] = useState(false)
+  const [introSeg, setIntroSeg] = useState(0) // 썸을 잠시 '30분'에 두었다가 제자리로
+  const [calStage, setCalStage] = useState(0) // 0 없음 → 1 시작일 → 2 범위 완성
+  useEffect(() => {
+    const ts = [
+      setTimeout(() => setTitleVisible(true), 400),
+      setTimeout(() => setIntroSeg(null), 900),
+      setTimeout(() => setCalStage(1), 1500),
+      setTimeout(() => setCalStage(2), 2000),
+    ]
+    return () => ts.forEach(clearTimeout)
+  }, [])
+
+  const segIndex = introSeg ?? (custom ? 3 : presetIndex)
 
   const pick = (d) => {
     if (d.min === null) {
@@ -39,7 +55,9 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
       <div className="fields">
         <label className="field">
           <span className="field-label">제목</span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="일정 제목" />
+          <motion.div animate={{ opacity: titleVisible ? 1 : 0 }} initial={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="일정 제목" />
+          </motion.div>
         </label>
 
         <div className="field">
@@ -126,14 +144,18 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
               <div className="cal-grid" key={wi}>
                 {week.map((d, di) => {
                   if (d === null) return <span key={di} className="cal-day" />
-                  const inRange = d >= rangeStart && d <= rangeEnd
-                  const isEdge = d === rangeStart || d === rangeEnd
+                  // 연출 단계에 따라 범위가 채워진다: 없음 → 13 → 13~17
+                  const inRange =
+                    calStage === 2 ? d >= rangeStart && d <= rangeEnd
+                    : calStage === 1 ? d === rangeStart
+                    : false
+                  const isEdge = inRange && (d === rangeStart || d === rangeEnd)
                   const num = isEdge ? (
                     <motion.span
                       className="cal-num"
                       initial={{ scale: 0.4, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      transition={{ ...EASE, delay: d === rangeEnd ? 0.28 : 0.2 }}
+                      transition={EASE}
                     >
                       {d}
                     </motion.span>
@@ -146,8 +168,8 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
                       className={[
                         'cal-day',
                         inRange && 'is-range',
-                        d === rangeStart && 'is-range-start',
-                        d === rangeEnd && 'is-range-end',
+                        inRange && d === rangeStart && 'is-range-start',
+                        ((calStage === 2 && d === rangeEnd) || (calStage === 1 && d === rangeStart)) && 'is-range-end',
                         di === 0 && 'is-sun',
                         !inRange && 'is-muted', // 기한 밖 날짜는 선택 불가
                         d === today && 'is-today',
