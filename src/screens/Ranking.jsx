@@ -77,7 +77,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
   return (
     <div className="product">
       <header className="screen-head">
-        <h1 className="screen-title">모두가 괜찮은 시간을 찾았어요</h1>
+        <h1 className="screen-title">가장 괜찮은 시간을 추렸어요</h1>
         <p className="screen-sub">어떤 후보든 필수는 전원 참석이에요</p>
       </header>
 
