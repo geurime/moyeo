@@ -8,15 +8,13 @@ const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 // 요약 한 줄 — 이 카드에서 읽어야 할 유일한 문장
 function summarize(slot, total) {
   const absent = slot.statuses.filter((s) => s.status === 'absent')
-  const unlikely = slot.statuses.filter((s) => s.status === 'unlikely')
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
-  const sure = total - absent.length - unlikely.length
+  const sure = total - absent.length
 
   if (absent.length > 0) {
-    return `${absent.map((s) => s.person.name).join('·')}님 불참 · ${sure}명 참석`
-  }
-  if (unlikely.length > 0) {
-    return `${unlikely.map((s) => s.person.name).join('·')}님 불참 예상 · ${sure}명 참석`
+    // 불참자의 역할(선택)은 "그래서 괜찮다"의 근거 — 요약에서 바로 답한다
+    const names = absent.map((s) => `${s.person.name}님${s.person.required ? '' : '(선택)'}`).join(' · ')
+    return `${names} 불참 · ${sure}명 참석`
   }
   if (reluctant.length === 1) return `전원 참석 · ${reluctant[0].person.name}님만 아쉬워요`
   if (reluctant.length > 1) return `전원 참석 · ${reluctant.length}명이 아쉬워요`
@@ -120,7 +118,9 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                                 <span className="mini-pnote">{s.avoids[0]}</span>
                               )}
                               {s.status === 'absent' && (
-                                <span className="mini-pnote">{s.avoids[0] || '일정 겹침'}</span>
+                                <span className="mini-pnote">
+                                  {s.person.required ? '' : '선택 · '}{s.avoids[0] || '일정 겹침'}
+                                </span>
                               )}
                             </div>
                           ))}
