@@ -40,17 +40,18 @@ export default function Confirmed({ slot, yourChips, durationMin, onReset }) {
       initial="hidden"
       animate="show"
     >
-      <div className="confirm-hero">
-        <svg className="check" viewBox="0 0 64 64" aria-hidden="true">
-          <circle className="check-circle" cx="32" cy="32" r="29" />
-          <path className="check-mark" d="M20 33.5 L28.5 42 L44 24.5" />
-        </svg>
-        <motion.p variants={item} className="confirm-title">{MEETING.title}</motion.p>
-        <motion.p variants={item} className="confirm-over is-date">{dateLabel}</motion.p>
-        <motion.h1 variants={item} className="confirm-time">{timeLabel}</motion.h1>
-      </div>
+      <div className="confirm-body">
+        <div className="confirm-hero">
+          <svg className="check" viewBox="0 0 64 64" aria-hidden="true">
+            <circle className="check-circle" cx="32" cy="32" r="29" />
+            <path className="check-mark" d="M20 33.5 L28.5 42 L44 24.5" />
+          </svg>
+          <motion.p variants={item} className="confirm-title">{MEETING.title}</motion.p>
+          <motion.p variants={item} className="confirm-over is-date">{dateLabel}</motion.p>
+          <motion.h1 variants={item} className="confirm-time">{timeLabel}</motion.h1>
+        </div>
 
-      <motion.ul variants={item} className="fact-list">
+        <motion.ul variants={item} className="fact-list">
         <li className="fact-row">
           <span className="auto-check" aria-hidden="true">✓</span>
           {reasonLine(slot, allSlots, slot.statuses.length)}
@@ -67,7 +68,8 @@ export default function Confirmed({ slot, yourChips, durationMin, onReset }) {
             {s.person.name}님은 불참이에요{s.avoids[0] ? ` · ${s.avoids[0]}` : ''}
           </li>
         ))}
-      </motion.ul>
+        </motion.ul>
+      </div>
 
       <motion.div variants={item} className="cta-dock">
         <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onReset}>

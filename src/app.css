@@ -906,26 +906,31 @@
 
 /* ── 화면 4: 확정 ────────────────────────────────── */
 
-/* 확정 = 모두가 받는 회의 요약장 — 세로 중심을 잡고 숨 쉬게 */
-.confirm-hero {
+/* 확정 = 모두가 받는 회의 요약장 — 축하와 사실이 한 덩어리로 화면 중앙 */
+.confirm-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+}
+.confirm-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  padding: var(--s8) 0 var(--s6);
+  padding-bottom: var(--s5);
 }
 .confirm-title {
   font: var(--t-title);
-  margin: var(--s5) 0 var(--s2);
+  margin: var(--s5) 0 var(--s3);
 }
-.confirm-over {
+.confirm-over.is-date {
   font: var(--t-cap);
+  font-size: 0.9375rem; /* 날짜는 시간의 동반 정보 — 서브가 아니라 본문 급 */
   font-weight: 600;
-  color: var(--sub);
+  color: var(--ink);
+  margin-bottom: 2px;
 }
-.confirm-over.is-date { margin-bottom: 2px; }
 .confirm-time {
   font: var(--t-display);
   letter-spacing: -0.02em;
