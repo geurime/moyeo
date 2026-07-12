@@ -9,7 +9,7 @@ export default function Roles({ people, onTogglePerson, onNext }) {
     <div className="product">
       <header className="screen-head">
         <h1 className="screen-title">빠져도 괜찮은 사람이 있나요?</h1>
-        <p className="screen-sub">기본은 전원 필수예요</p>
+        <p className="screen-sub">모두 참석이 기본이에요</p>
       </header>
 
       <ul className="person-list">
