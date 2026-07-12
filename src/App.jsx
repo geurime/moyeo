@@ -1,15 +1,16 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import { PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from './data.js'
+import { HOST, PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Attendees from './screens/Attendees.jsx'
+import Roles from './screens/Roles.jsx'
 import Interstitial from './screens/Interstitial.jsx'
 import Adjust from './screens/Adjust.jsx'
 import Ranking from './screens/Ranking.jsx'
 import Confirmed from './screens/Confirmed.jsx'
 
-const STEPS = ['framing', 'create', 'attendees', 'sent', 'adjust', 'collected', 'ranking', 'confirmed']
+const STEPS = ['framing', 'create', 'attendees', 'roles', 'sent', 'adjust', 'collected', 'ranking', 'confirmed']
 
 // 데모 내레이션 — 화자가 바뀌는 지점을 다크 화면으로 분리한다.
 const NARRATIONS = {
@@ -35,7 +36,7 @@ const NARRATIONS = {
 
 export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
-  const [people, setPeople] = useState(PEOPLE)
+  const [people, setPeople] = useState([HOST]) // 명단은 주최자부터 시작해 직접 만든다
   const [durationMin, setDurationMin] = useState(60) // 회의 길이(분) — 랭킹에 실반영
   const [profileOff, setProfileOff] = useState([]) // 이번 주만 끈 프로필 항목
   const [exceptions, setExceptions] = useState([]) // 이번 주만 추가한 예외
@@ -54,12 +55,21 @@ export default function App() {
   const next = () => setStepIndex((i) => Math.min(i + 1, STEPS.length - 1))
   const reset = () => {
     setStepIndex(0)
-    setPeople(PEOPLE)
+    setPeople([HOST])
     setDurationMin(60)
     setProfileOff([])
     setExceptions([])
     setConfirmedSlot(null)
   }
+
+  // 도트로 뒤 단계에 바로 점프할 때 — 명단이 비어 있으면 시나리오 상태로 채운다
+  const jumpTo = (i) => {
+    if (i >= STEPS.indexOf('sent') && people.length < 3) setPeople(PEOPLE)
+    setStepIndex(i)
+  }
+
+  // 지난 회의 역할 기억으로 추가 — lastRole이 'optional'이면 선택으로
+  const withRole = (c) => ({ ...c, required: c.lastRole !== 'optional' })
 
   const toggleIn = (setter) => (id) =>
     setter((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
@@ -67,6 +77,7 @@ export default function App() {
   const viewpoint = {
     create: '지민 — 주최자의 화면',
     attendees: '지민 — 주최자의 화면',
+    roles: '지민 — 주최자의 화면',
     adjust: '서연 — 참석자의 화면',
     ranking: '지민 — 주최자의 화면',
     confirmed: '지민 — 주최자의 화면',
@@ -118,16 +129,31 @@ export default function App() {
               {step === 'attendees' && (
                 <Attendees
                   people={people}
-                  onTogglePerson={(id) =>
-                    setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
-                  }
-                  onAddPerson={(s) => setPeople((ps) => [...ps, { ...s, isAdded: true }])}
+                  onAddPerson={(c) => setPeople((ps) => [...ps, withRole(c)])}
+                  onAddMany={(cs) => setPeople((ps) => [...ps, ...cs.map(withRole)])}
                   onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
                   onNext={next}
                 />
               )}
+              {step === 'roles' && (
+                <Roles
+                  people={people}
+                  rolesRemembered={people.some((p) => p.lastRole === 'optional' && !p.required)}
+                  onTogglePerson={(id) =>
+                    setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
+                  }
+                  onNext={next}
+                />
+              )}
               {(step === 'sent' || step === 'collected') && (
-                <Interstitial narration={NARRATIONS[step]} onNext={next} />
+                <Interstitial
+                  narration={
+                    step === 'sent'
+                      ? { ...NARRATIONS.sent, lines: [`${people.length - 1}명에게 확인을 보냈어요.`, NARRATIONS.sent.lines[1]] }
+                      : NARRATIONS.collected
+                  }
+                  onNext={next}
+                />
               )}
               {step === 'adjust' && (
                 <Adjust
@@ -156,7 +182,7 @@ export default function App() {
               key={s}
               className={`demo-dot ${i === stepIndex ? 'is-active' : ''} ${i < stepIndex ? 'is-done' : ''}`}
               aria-label={`${i + 1}단계로 이동`}
-              onClick={() => setStepIndex(i)}
+              onClick={() => jumpTo(i)}
             />
           ))}
           <button className="demo-reset" onClick={reset}>처음부터</button>

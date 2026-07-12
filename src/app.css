@@ -173,6 +173,7 @@
   transition: background 0.15s ease;
 }
 .cta:active { background: #086350; }
+.cta:disabled { background: var(--surface-dim); color: var(--sub); }
 
 .cta-light { background: var(--narrator-text); color: var(--ink); }
 
@@ -358,7 +359,7 @@
   padding: 2px var(--s2);
 }
 
-/* 필수/선택 상태 칩 — 칩이 곧 상태이자 버튼. 탭하면 전환. */
+/* 필수/선택 상태 칩 — 칩이 곧 상태이자 버튼. 탭하면 전환. 테두리가 어포던스. */
 .role-chip {
   width: 60px;
   padding: 6px 0;
@@ -367,17 +368,103 @@
   font: var(--t-cap);
   font-weight: 700;
   color: var(--sub);
-  background: var(--surface-dim);
-  border: 1.5px solid transparent;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  background: var(--surface);
+  border: 1.5px solid #d9dce0;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   flex: none;
 }
 .role-chip.is-required {
   background: var(--go-tint);
   color: var(--go);
-  border-color: rgba(11, 122, 99, 0.25);
+  border-color: rgba(11, 122, 99, 0.4);
 }
 .role-chip:disabled { opacity: 0.6; cursor: default; }
+
+/* 동료 검색 */
+.search {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  background: var(--surface-dim);
+  border-radius: var(--r-inner);
+  padding: var(--s3) var(--s3);
+  margin-bottom: var(--s5);
+}
+.search-icon { color: var(--sub); display: grid; place-items: center; flex: none; }
+.search input { font: var(--t-body); }
+.search input::placeholder { color: var(--sub); }
+
+.search-results { margin-bottom: var(--s5); }
+.search-none {
+  font: var(--t-cap);
+  color: var(--sub);
+  text-align: center;
+  padding: var(--s4) 0;
+}
+
+/* 추가된 사람 — 아바타 스트립 (탭하면 빼기) */
+.picked {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  margin-bottom: var(--s5);
+  min-height: 56px;
+}
+.picked-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  position: relative;
+  width: 44px;
+}
+.picked-item .avatar { width: 40px; height: 40px; }
+.picked-name {
+  font: var(--t-cap);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--sub);
+}
+.picked-x {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 0.5625rem;
+  font-weight: 700;
+}
+
+/* 지난 멤버 벌크 추가 */
+.bulk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s3);
+  border-radius: var(--r-pill);
+  background: var(--go-tint);
+  color: var(--go);
+  font: var(--t-cap);
+  font-weight: 700;
+  margin-bottom: var(--s5);
+}
+.bulk-icon { font-size: 1rem; }
+
+/* 동료 리스트 — 탭하면 추가 */
+.person-add-row {
+  width: 100%;
+  text-align: left;
+}
+.add-mark {
+  color: var(--go);
+  font-weight: 800;
+  font-size: 1.0625rem;
+}
 
 /* ── 화면 2: 응답 ────────────────────────────────── */
 
@@ -626,31 +713,6 @@
   transition: background 0.15s ease;
 }
 .head-add:active { background: var(--go-tint); }
-
-/* 참석자 추가 제안 */
-.suggest-list {
-  list-style: none;
-  background: var(--surface-dim);
-  border-radius: var(--r-inner);
-  padding: var(--s2) var(--s3);
-  margin-bottom: var(--s2);
-}
-.suggest-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s3);
-  padding: var(--s2) 0;
-}
-.suggest-row + .suggest-row { border-top: 1px solid var(--line); }
-.suggest-row .avatar { width: 30px; height: 30px; }
-.suggest-add {
-  font: var(--t-cap);
-  font-weight: 700;
-  color: var(--go);
-  background: var(--go-tint);
-  border-radius: var(--r-pill);
-  padding: 5px var(--s3);
-}
 
 .remove-btn {
   font: var(--t-cap);

@@ -24,15 +24,32 @@ export const HOURS = [10, 11, 13, 14, 15, 16]
 
 // responded: 소프트 선호에 응답했는지. 준호는 미응답 —
 // 하드(캘린더)는 자동 수집되므로 미응답이어도 랭킹에 반영된다는 걸 보여주는 장치.
-// concessions: 양보 원장 — 최근 비선호 시간에 확정되거나 불참한 횟수.
-// 원장이 있는 사람의 비선호는 랭킹에서 한 톤 무겁게(−12 → −18) 매겨진다.
+// 주최자 — 명단의 시작점이자 항상 필수.
+export const HOST = { id: 'jimin', name: '지민', initial: '지', required: true, responded: true, isHost: true }
+
+// 동료 풀 — 참석자 화면의 브라우즈 리스트.
+// lastRole: 지난 회의에서의 역할 기억 — 추가되는 순간 필수/선택 기본값이 된다.
+// concessions: 양보 원장 — 원장이 있는 사람의 비선호는 랭킹에서 ×1.5로 무겁게.
+export const COLLEAGUES = [
+  { id: 'seoyeon', name: '서연', initial: '서', responded: true,  lastRole: 'required', isYou: true },
+  { id: 'junho',   name: '준호', initial: '준', responded: false, lastRole: 'required' },
+  { id: 'minsu',   name: '민수', initial: '민', responded: true,  lastRole: 'required' },
+  { id: 'haeun',   name: '하은', initial: '하', responded: true,  lastRole: 'optional' },
+  { id: 'jiyeon',  name: '지연', initial: '연', responded: true,  lastRole: 'optional', concessions: 1, concessionNote: '지난달 양보 1회' },
+  { id: 'dahye',   name: '다혜', initial: '다', responded: true,  lastRole: null },
+  { id: 'taeo',    name: '태오', initial: '태', responded: true,  lastRole: null },
+]
+
+// 지난 킥오프 멤버 — 벌크 추가 칩의 대상.
+export const LAST_MEETING_IDS = ['seoyeon', 'junho', 'minsu', 'haeun', 'jiyeon']
+
+// 시나리오 완성 상태의 6인 명단 — 검증 스크립트와 데모 점프(도트 이동)용.
 export const PEOPLE = [
-  { id: 'jimin',   name: '지민', initial: '지', required: true,  responded: true,  isHost: true },
-  { id: 'seoyeon', name: '서연', initial: '서', required: true,  responded: true,  isYou: true },
-  { id: 'junho',   name: '준호', initial: '준', required: true,  responded: false },
-  { id: 'minsu',   name: '민수', initial: '민', required: true,  responded: true },
-  { id: 'haeun',   name: '하은', initial: '하', required: false, responded: true },
-  { id: 'jiyeon',  name: '지연', initial: '연', required: false, responded: true, concessions: 1, concessionNote: '지난달 양보 1회' },
+  HOST,
+  ...COLLEAGUES.filter((c) => LAST_MEETING_IDS.includes(c.id)).map((c) => ({
+    ...c,
+    required: c.lastRole !== 'optional',
+  })),
 ]
 
 // 하드 제약 — 사내 캘린더 free/busy에서 자동 수집됐다고 가정하는 데이터.
@@ -110,12 +127,6 @@ export const EXCEPTION_OPTIONS = [
   { id: 'ex-late',  group: 'time', label: '늦은 오후', full: '늦은 오후', match: (d, h) => h >= 16 },
 ]
 
-// 생성 화면의 '동료 추가' 검색 제안 — 추가하면 랭킹에 실제로 반영된다.
-// 새로 추가되는 사람은 '전원 필수' 기본값을 따른다.
-export const SUGGESTED_PEOPLE = [
-  { id: 'dahye', name: '다혜', initial: '다', required: true, responded: true },
-  { id: 'taeo',  name: '태오', initial: '태', required: true, responded: true },
-]
 
 // 기간 캘린더 (2026년 7월) — 7/1은 수요일. null은 빈 칸, 주말은 비활성.
 export const CALENDAR = {
