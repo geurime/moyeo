@@ -52,7 +52,9 @@
 .screen {
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none; /* 스크롤바 숨김 — 폰 프레임 안이라 시각 소음 */
 }
+.screen::-webkit-scrollbar { display: none; }
 
 /* 데모 진행 레일 (폰 밖) */
 .demo-rail {

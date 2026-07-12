@@ -171,7 +171,7 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
 
       <div className="cta-dock">
         <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onNext}>
-          참석자 고르기
+          참석자 정하기
         </motion.button>
       </div>
     </div>
