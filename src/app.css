@@ -359,26 +359,40 @@
   padding: 2px var(--s2);
 }
 
-/* 필수/선택 상태 칩 — 칩이 곧 상태이자 버튼. 탭하면 전환. 테두리가 어포던스. */
-.role-chip {
-  width: 60px;
-  padding: 6px 0;
-  text-align: center;
+/* 필수/선택 토글 — 두 상태가 다 보이고, 흰 썸이 미끄러진다 */
+.toggle {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 104px;
+  background: var(--surface-dim);
   border-radius: var(--r-pill);
-  font: var(--t-cap);
-  font-weight: 700;
-  color: var(--sub);
-  background: var(--surface);
-  border: 1.5px solid #d9dce0;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  padding: 3px;
   flex: none;
 }
-.role-chip.is-required {
-  background: var(--go-tint);
-  color: var(--go);
-  border-color: rgba(11, 122, 99, 0.4);
+.toggle:disabled { opacity: 0.55; cursor: default; }
+
+.toggle-ind {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px); /* = (100% - 패딩 6px) / 2 — 칸 폭과 일치 */
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: 0 1px 3px rgba(23, 25, 29, 0.14);
 }
-.role-chip:disabled { opacity: 0.6; cursor: default; }
+
+.toggle-opt {
+  position: relative;
+  padding: 5px 0;
+  text-align: center;
+  font: var(--t-cap);
+  color: var(--sub);
+  transition: color 0.15s ease;
+}
+.toggle-opt.is-on { color: var(--ink); font-weight: 700; }
+.toggle.is-required .toggle-opt.is-on { color: var(--go); }
 
 /* 동료 검색 */
 .search {

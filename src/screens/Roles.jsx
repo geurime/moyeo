@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 
-const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
+const EASE = { duration: 0.2, ease: [0.2, 0, 0, 1] }
 
 // 화면 ②: 꼭 와야 하는 사람은? — 가중치 결정.
 // 역할도 지난 회의에서 학습돼 미리 채워져 있다. 확인만 하면 끝.
@@ -25,26 +25,22 @@ export default function Roles({ people, rolesRemembered, onTogglePerson, onNext 
                 {p.name}
                 {p.isHost && <span className="tag">나 · 주최</span>}
               </span>
-              <motion.button
-                whileTap={p.isHost ? undefined : { scale: 0.92 }}
-                className={`role-chip ${p.required ? 'is-required' : ''}`}
+              <button
+                className={`toggle ${p.required ? 'is-required' : ''}`}
                 onClick={() => onTogglePerson(p.id)}
                 disabled={p.isHost}
                 aria-pressed={p.required}
                 aria-label={`${p.name} ${p.required ? '필수' : '선택'} 참석 — 눌러서 전환`}
               >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={p.required ? 'r' : 'o'}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.12 }}
-                  >
-                    {p.required ? '필수' : '선택'}
-                  </motion.span>
-                </AnimatePresence>
-              </motion.button>
+                <motion.span
+                  className="toggle-ind"
+                  animate={{ x: p.required ? '0%' : '100%' }}
+                  transition={EASE}
+                  aria-hidden="true"
+                />
+                <span className={`toggle-opt ${p.required ? 'is-on' : ''}`}>필수</span>
+                <span className={`toggle-opt ${!p.required ? 'is-on' : ''}`}>선택</span>
+              </button>
             </div>
           </li>
         ))}
