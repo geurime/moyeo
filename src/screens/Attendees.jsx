@@ -36,10 +36,10 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
         />
       </div>
 
-      {/* 추가된 사람 — 아바타 스트립 */}
+      {/* 추가한 사람 — 아바타 스트립 (나는 제외: 고른 대상이 아니니까) */}
       <div className="picked">
         <AnimatePresence initial={false}>
-          {people.map((p) => (
+          {people.filter((p) => !p.isHost).map((p) => (
             <motion.button
               key={p.id}
               className="picked-item"
@@ -47,13 +47,12 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.6 }}
               transition={EASE}
-              onClick={() => !p.isHost && onRemovePerson(p.id)}
-              disabled={p.isHost}
-              aria-label={p.isHost ? `${p.name} (주최자)` : `${p.name} 빼기`}
+              onClick={() => onRemovePerson(p.id)}
+              aria-label={`${p.name} 빼기`}
             >
-              <span className={`avatar ${p.isHost ? 'avatar-required' : ''}`}>{p.initial}</span>
-              <span className="picked-name">{p.isHost ? '나' : p.name}</span>
-              {!p.isHost && <span className="picked-x" aria-hidden="true">✕</span>}
+              <span className="avatar">{p.initial}</span>
+              <span className="picked-name">{p.name}</span>
+              <span className="picked-x" aria-hidden="true">✕</span>
             </motion.button>
           ))}
         </AnimatePresence>
@@ -76,11 +75,7 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
                   transition={EASE}
                 >
                   <button className="person-row-inner person-add-row" onClick={() => onAddMany(g.left)}>
-                    <span className="avatar-stack">
-                      {g.left.slice(0, 3).map((m) => (
-                        <span key={m.id} className="avatar">{m.initial}</span>
-                      ))}
-                    </span>
+                    <span className="avatar avatar-group">{g.name[0]}</span>
                     <span className="person-name">
                       {g.name}
                       <span className="tag">{g.left.length}명</span>
@@ -129,7 +124,7 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
           onClick={onNext}
           disabled={people.length < 2}
         >
-          {people.length < 2 ? '함께할 사람을 골라주세요' : `${people.length}명으로 다음`}
+          {people.length < 2 ? '함께할 사람을 골라주세요' : `나 포함 ${people.length}명으로 다음`}
         </motion.button>
       </div>
     </div>

@@ -440,16 +440,9 @@
   font-weight: 700;
 }
 
-/* 그룹 — 팀 단위 추가. 아바타 스택으로 구성 미리보기 */
+/* 그룹 — 팀 단위 추가. 개인=원, 그룹=라운드 사각으로 형태 구분 */
 .group-list { margin-bottom: var(--s5); }
-.avatar-stack { display: flex; flex: none; }
-.avatar-stack .avatar {
-  width: 30px;
-  height: 30px;
-  font-size: 0.6875rem;
-  border: 2px solid var(--surface);
-}
-.avatar-stack .avatar + .avatar { margin-left: -8px; }
+.avatar-group { border-radius: 12px; }
 
 /* 동료 리스트 — 탭하면 추가 */
 .person-add-row {
