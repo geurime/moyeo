@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { BUSY, DAYS, MEETING, ADJUST_OPTIONS, LEARNED_IDS } from '../data.js'
+import { motion } from 'framer-motion'
+import { BUSY, DAYS, MEETING, ADJUST_OPTIONS } from '../data.js'
 import { formatMin } from '../ranking.js'
 
 const myBusy = BUSY.seoyeon
@@ -13,11 +13,6 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
   const timeOptions = ADJUST_OPTIONS.filter((o) => o.group === 'time')
   const preferOptions = ADJUST_OPTIONS.filter((o) => o.group === 'prefer')
 
-  // 학습 기본값에서 달라진 개수 = 이번 일정의 조정
-  const changes =
-    chipIds.filter((id) => !LEARNED_IDS.includes(id)).length +
-    LEARNED_IDS.filter((id) => !chipIds.includes(id)).length
-  const ctaLabel = changes > 0 ? `보내기 · 조정 ${changes}개` : '이대로 좋아요'
 
   const chip = (o) => (
     <motion.button
@@ -92,17 +87,7 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
 
       <div className="cta-dock">
         <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onNext}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={ctaLabel}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.14 }}
-            >
-              {ctaLabel}
-            </motion.span>
-          </AnimatePresence>
+          이대로 좋아요
         </motion.button>
       </div>
     </div>
