@@ -821,10 +821,10 @@
   width: 34px;
   height: 34px;
   font-size: 0.75rem;
-  background: var(--surface);
 }
 .mini-person.is-reluctant .avatar,
 .mini-person.is-unlikely .avatar {
+  background: var(--surface);
   box-shadow: inset 0 0 0 1.5px var(--go);
   color: var(--go);
 }
@@ -837,7 +837,7 @@
 }
 .mini-pnote {
   font: var(--t-cap);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   color: var(--sub);
   word-break: keep-all;
   line-height: 1.3;
