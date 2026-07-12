@@ -49,13 +49,8 @@ export const GROUPS = [
 // 지난 킥오프 멤버 — 시나리오 명단 구성용.
 export const LAST_MEETING_IDS = ['seoyeon', 'junho', 'minsu', 'haeun', 'jiyeon']
 
-// 데모 시작 상태 — 시나리오상 프로덕트팀 6명이 모이는 회의 (역할은 아직 전원 필수).
-export const INITIAL_PEOPLE = [
-  HOST,
-  ...COLLEAGUES.filter((c) => GROUPS[0].memberIds.includes(c.id)).map((c) => ({ ...c, required: true })),
-]
-
-// 시나리오 완성 상태의 6인 명단 — 검증 스크립트와 데모 점프(목차 이동)용.
+// 시나리오 상태의 6인 명단 — 프로덕트팀, 하은·지연은 선택(지민이 이미 내린 판단).
+// 데모 시작·리셋·검증이 모두 이 상태를 공유해 기본 경로의 결과가 항상 같다.
 export const PEOPLE = [
   HOST,
   ...COLLEAGUES.filter((c) => LAST_MEETING_IDS.includes(c.id)).map((c) => ({
@@ -63,6 +58,7 @@ export const PEOPLE = [
     required: c.lastRole !== 'optional',
   })),
 ]
+export const INITIAL_PEOPLE = PEOPLE
 
 // 하드 제약 — 사내 캘린더 free/busy에서 자동 수집됐다고 가정하는 데이터.
 // { day, start, end } : start시부터 end시 직전까지 바쁨.
