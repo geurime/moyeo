@@ -4,6 +4,7 @@ import { rankSlots, endLabel } from '../ranking.js'
 import { DAYS } from '../data.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
+const DAY_FULL = { 월: '월요일', 화: '화요일', 수: '수요일', 목: '목요일', 금: '금요일' }
 
 // 요약 한 줄 — 고정 문형: [참석 현황(강조)] · [설명(그레이)]
 function SummaryNote({ slot, total }) {
