@@ -65,7 +65,9 @@ export default function Confirmed({ slot, yourChips, durationMin, onReset }) {
         {absent.map((s) => (
           <li key={s.person.id} className="fact-row">
             <span className="auto-check" aria-hidden="true">✓</span>
-            {s.person.name}님은 불참이에요{s.avoids[0] ? ` · ${s.avoids[0]}` : ''}
+            {s.avoids[0]
+              ? `${s.person.name}님은 ${s.avoids[0]}으로 불참이에요`
+              : `${s.person.name}님은 일정이 겹쳐 불참이에요`}
           </li>
         ))}
         </motion.ul>
