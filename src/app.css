@@ -64,10 +64,10 @@
 
 .phone {
   width: 390px;
-  height: 737px; /* 17:9 */
+  height: 823px; /* 19:9 */
   transform: scale(0.9);
   transform-origin: center;
-  margin: -37px 0; /* 스케일 여백 상쇄 (737×0.1/2) */
+  margin: -41px 0; /* 스케일 여백 상쇄 (823×0.1/2) */
   flex: none;
   background: var(--surface);
   border-radius: 28px;
