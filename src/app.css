@@ -735,17 +735,21 @@
 
 .slot-list { display: flex; flex-direction: column; gap: var(--s3); }
 
+/* 카드는 선이 아니라 면으로 — 선택됐을 때만 틸 선이 나타난다 (xext 시트) */
 .slot {
   display: block;
   width: 100%;
   text-align: left;
-  background: var(--surface);
-  border: 1.5px solid #e2e5e9;
+  background: var(--surface-dim);
+  border: 1.5px solid transparent;
   border-radius: var(--r-card);
   padding: var(--s4);
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease;
 }
-.slot.is-picked { border-color: var(--go); }
+.slot.is-picked {
+  background: var(--surface);
+  border-color: var(--go);
+}
 
 .slot-top {
   display: flex;
