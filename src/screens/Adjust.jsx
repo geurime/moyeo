@@ -34,8 +34,8 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
   return (
     <div className="product">
       <header className="screen-head">
-        <h1 className="screen-title">다음 주, 서연님 조건은<br />이렇게 반영돼 있어요</h1>
-        <p className="screen-sub">지민님의 {MEETING.title} · {formatMin(durationMin)}</p>
+        <h1 className="screen-title">일정을 확인해주세요</h1>
+        <p className="screen-sub">지민님의 {MEETING.title} · 다음 주 · {formatMin(durationMin)}</p>
       </header>
 
       {/* 캘린더 자동 반영 — 텍스트 목록 대신 미니 주간 타임라인.
@@ -104,7 +104,6 @@ export default function Adjust({ durationMin, chipIds, onToggle, onNext }) {
             </motion.span>
           </AnimatePresence>
         </motion.button>
-        <p className="cta-hint">반복되는 조정은 학습해서, 다음 회의의 기본값이 돼요</p>
       </div>
     </div>
   )
