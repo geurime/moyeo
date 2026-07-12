@@ -757,10 +757,19 @@
   gap: var(--s2);
   margin-bottom: 4px;
 }
-.slot-date { margin-left: auto; font: var(--t-cap); color: var(--sub); }
-
-/* 추천 = 별 하나 — 상자 없이 */
-.slot-star { color: var(--go); font-size: 1rem; line-height: 1; }
+/* 추천 — 헤드라인 우측의 가벼운 틴트 뱃지 */
+.slot-badge {
+  margin-left: auto;
+  align-self: center;
+  background: var(--go-tint);
+  color: var(--go);
+  border-radius: 8px;
+  padding: 3px var(--s2);
+  font: var(--t-cap);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex: none;
+}
 .slot-clock {
   font: var(--t-display);
   font-size: 1.25rem; /* 요일 포함으로 폭 확보 */
