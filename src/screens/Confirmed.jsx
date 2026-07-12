@@ -15,7 +15,6 @@ export default function Confirmed({ slot, durationMin, onReset }) {
   const when = `${DAY_FULL[slot.day]} ${date} · ${slot.hour}:00–${endLabel(slot.hour, durationMin)}`
 
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
-  const unlikely = slot.statuses.filter((s) => s.status === 'unlikely')
   const absent = slot.statuses.filter((s) => s.status === 'absent')
   const isFull = slot.attendCount === slot.statuses.length
 
@@ -56,16 +55,6 @@ export default function Confirmed({ slot, durationMin, onReset }) {
           </p>
           <p className="msg-ledger">
             ✓ 이번 양보는 기록했어요 — 다음 회의에선 {s.person.name}님 선호가 먼저예요
-          </p>
-        </motion.div>
-      ))}
-
-      {unlikely.map((s) => (
-        <motion.div variants={item} className="msg-card msg-warn" key={s.person.id}>
-          <p className="msg-label">{s.person.name}님께는 따로</p>
-          <p className="msg-body">
-            {s.avoids[0]}와 겹치는 날이라 무리해서 오지 않으셔도 돼요. 어려우면
-            회의록으로 공유할게요.
           </p>
         </motion.div>
       ))}

@@ -90,15 +90,11 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                 role="radio"
                 aria-checked={picked}
               >
-                <div className="slot-top">
-                  {/* 순서는 위치가 말한다 — 라벨은 시스템의 의견(추천) 하나만 */}
-                  <span className="slot-rank is-top">{i === 0 ? '추천' : ''}</span>
-                  <span className={`slot-radio ${picked ? 'is-on' : ''}`} aria-hidden="true" />
-                </div>
-
+                {/* 선택 표시는 카드 테두리가 담당 — 라디오 없음. 추천은 시간과 같은 줄에 */}
                 <div className="slot-when">
                   <span className="slot-date">{slot.day} {date}</span>
                   <span className="slot-clock">{slot.hour}:00–{endLabel(slot.hour, durationMin)}</span>
+                  {i === 0 && <span className="slot-badge">추천</span>}
                 </div>
 
                 <p className="slot-note">{summarize(slot, people.length)}</p>
@@ -120,10 +116,12 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                             <div key={s.person.id} className={`mini-person is-${s.status}`}>
                               <span className="avatar">{s.person.initial}</span>
                               <span className="mini-pname">{s.person.name}</span>
-                              {(s.status === 'reluctant' || s.status === 'unlikely') && (
+                              {s.status === 'reluctant' && (
                                 <span className="mini-pnote">{s.avoids[0]}</span>
                               )}
-                              {s.status === 'absent' && <span className="mini-pnote">일정 겹침</span>}
+                              {s.status === 'absent' && (
+                                <span className="mini-pnote">{s.avoids[0] || '일정 겹침'}</span>
+                              )}
                             </div>
                           ))}
                       </div>

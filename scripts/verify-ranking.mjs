@@ -51,19 +51,17 @@ const topEmpty = rankSlots(PEOPLE, [])[0]
 check('프로필 전부 꺼도 1위는 화 10:00', topEmpty.day === '화' && topEmpty.hour === 10,
   `실제: ${topEmpty.day} ${topEmpty.hour}:00`)
 
-// 견고성 2: 조정 칩을 전부 켠 극단 케이스 — 크래시 없이 재계산되고,
-// 서연의 다중 기피(화요일+출근 직후)가 화 10:00을 밀어내 목 15:00이 1위가 되는 게 옳다.
+// 견고성 2: 조정 칩 전부 켠 극단 케이스 — 필수(서연)가 모든 요일을 기피하면
+// 요일 기피 = 하드이므로 후보 0개, 빈 상태로 정확히 진입해야 한다.
 const rankedAll = rankSlots(PEOPLE, ADJUST_OPTIONS)
-check('칩 전부 켜도 후보가 정상 생성됨', rankedAll.length === 3, `실제: ${rankedAll.length}개`)
-check('칩 전부 켜면 다중 기피가 실반영돼 1위가 목 15:00로 재계산됨',
-  rankedAll[0].day === '목' && rankedAll[0].hour === 15,
-  `실제: ${rankedAll[0].day} ${rankedAll[0].hour}:00`)
+check('요일 칩 전부 켜면 후보 0개 (필수의 요일 기피는 하드)', rankedAll.length === 0,
+  `실제: ${rankedAll.length}개`)
 
-// 양보 원장: 지연(지난달 양보 1회)의 비선호는 -12가 아니라 -18로 반영
+// 외근(요일 제약) = 불참: 목 15:00에서 지연은 absent, 감점 -40
 const thu15 = ranked.find((s) => s.day === '목' && s.hour === 15)
-check('양보 원장 가중 적용 (목 15:00 = -18)', thu15 && thu15.score === -18,
+check('목 15:00에서 지연은 불참 처리', thu15 && thu15.statuses.find((s) => s.person.id === 'jiyeon')?.status === 'absent')
+check('외근 불참 감점 적용 (목 15:00 = -40)', thu15 && thu15.score === -40,
   thu15 ? `실제: ${thu15.score}` : '슬롯 없음')
-check('원장 가중이 상태에 표시됨', thu15 && thu15.statuses.some((s) => s.ledgerWeighted))
 
 // 길이 실동작: 30분이면 후보·순위 동일(1시간 안에 들어가므로), 90분이면 연속 시간이 없어 0개
 const top30 = rankSlots(PEOPLE, YOUR_PROFILE, 30)[0]

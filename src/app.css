@@ -751,38 +751,6 @@
   border-color: var(--go);
 }
 
-.slot-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--s2);
-}
-
-.slot-rank { font: var(--t-cap); font-weight: 700; color: var(--sub); }
-.slot-rank.is-top { color: var(--go); }
-
-/* 라디오 — 선택 상태의 유일한 마커 */
-.slot-radio {
-  width: 20px;
-  height: 20px;
-  border-radius: var(--r-pill);
-  border: 1.5px solid #d0d5da;
-  display: grid;
-  place-items: center;
-  transition: border-color 0.15s ease;
-}
-.slot-radio::after {
-  content: '';
-  width: 10px;
-  height: 10px;
-  border-radius: var(--r-pill);
-  background: var(--go);
-  transform: scale(0);
-  transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1);
-}
-.slot-radio.is-on { border-color: var(--go); }
-.slot-radio.is-on::after { transform: scale(1); }
-
 .slot-when {
   display: flex;
   align-items: baseline;
@@ -790,6 +758,19 @@
   margin-bottom: 4px;
 }
 .slot-date { font: var(--t-cap); font-weight: 600; color: var(--sub); }
+
+/* 추천 — 시간과 같은 줄 우측, 시스템의 의견 하나만 */
+.slot-badge {
+  margin-left: auto;
+  align-self: center;
+  background: var(--go);
+  color: #fff;
+  border-radius: var(--r-pill);
+  padding: 3px var(--s3);
+  font: var(--t-cap);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
 .slot-clock {
   font: var(--t-display);
   font-size: 1.375rem;
@@ -822,21 +803,31 @@
   height: 34px;
   font-size: 0.75rem;
 }
-/* 색 = 방향(틸 온다 / 회색 안 온다), 선 = 확실성(실선 확정 / 점선 미정) */
+/* 전원 같은 회색 원 베이스 — 링 색이 방향(틸 참석 / 회색 불참), 비선호는 캡션이 말한다 */
+.mini-person .avatar { position: relative; }
+.mini-person.is-ok .avatar,
+.mini-person.is-calendar-only .avatar,
 .mini-person.is-reluctant .avatar {
-  background: var(--surface);
   border: 1.5px solid var(--go);
-  color: var(--go);
-}
-.mini-person.is-unlikely .avatar {
-  background: var(--surface);
-  border: 1.5px dashed #c6cbd1;
-  color: var(--sub);
 }
 .mini-person.is-absent .avatar {
   border: 1.5px solid #c6cbd1;
   color: var(--sub);
-  opacity: 0.5;
+}
+.mini-person.is-absent .avatar::after {
+  content: '✕';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.5rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
 }
 .mini-pname {
   font: var(--t-cap);
