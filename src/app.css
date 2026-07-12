@@ -318,7 +318,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   background: var(--surface-dim);
-  border-radius: var(--r-inner);
+  border-radius: var(--r-pill); /* 선택 컨트롤 = pill (필수/선택 토글과 동일 계열) */
   padding: 4px;
 }
 .seg-thumb {
@@ -327,7 +327,7 @@
   bottom: 4px;
   left: 4px;
   width: calc(25% - 2px); /* = (100% - 패딩 8px) / 4 — 칸 폭과 정확히 일치 */
-  border-radius: 9px;
+  border-radius: var(--r-pill);
   background: var(--surface);
   box-shadow: 0 1px 4px rgba(23, 25, 29, 0.12);
 }
