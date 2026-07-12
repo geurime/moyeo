@@ -31,6 +31,13 @@ function spanFor(startHour, durationMin) {
   return run.slice(idx, idx + need)
 }
 
+// 길이 표기 규칙 — 60분 미만은 분, 60분부터는 시간(+분)
+export function formatMin(min) {
+  if (min < 60) return `${min}분`
+  if (min % 60 === 0) return `${min / 60}시간`
+  return `${Math.floor(min / 60)}시간 ${min % 60}분`
+}
+
 // 종료 시각 라벨 — "10:00–11:30" 의 뒷부분
 export function endLabel(startHour, durationMin) {
   const endH = startHour + Math.floor(durationMin / 60)

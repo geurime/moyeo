@@ -1,9 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { BUSY, MEETING, YOUR_PROFILE, EXCEPTION_OPTIONS } from '../data.js'
+import { formatMin } from '../ranking.js'
 
 const myBusy = BUSY.seoyeon
 
-export default function Adjust({ profileOff, exceptions, onToggleProfile, onToggleException, onNext }) {
+export default function Adjust({ durationMin, profileOff, exceptions, onToggleProfile, onToggleException, onNext }) {
   const changes = profileOff.length + exceptions.length
   const dayOptions = EXCEPTION_OPTIONS.filter((o) => o.group === 'day')
   const timeOptions = EXCEPTION_OPTIONS.filter((o) => o.group === 'time')
@@ -13,7 +14,7 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
     <div className="product">
       <header className="screen-head">
         <h1 className="screen-title">다음 주, 서연님 조건은<br />이렇게 반영돼 있어요</h1>
-        <p className="screen-sub">지민님의 {MEETING.title} · 1시간</p>
+        <p className="screen-sub">지민님의 {MEETING.title} · {formatMin(durationMin)}</p>
       </header>
 
       <div className="auto-card">

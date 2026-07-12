@@ -139,7 +139,6 @@ export default function App() {
               {step === 'roles' && (
                 <Roles
                   people={people}
-                  rolesRemembered={people.some((p) => p.lastRole === 'optional' && !p.required)}
                   onTogglePerson={(id) =>
                     setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
                   }
@@ -158,6 +157,7 @@ export default function App() {
               )}
               {step === 'adjust' && (
                 <Adjust
+                  durationMin={durationMin}
                   profileOff={profileOff}
                   exceptions={exceptions}
                   onToggleProfile={toggleIn(setProfileOff)}

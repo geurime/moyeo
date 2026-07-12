@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { MEETING, CALENDAR } from '../data.js'
+import { formatMin } from '../ranking.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
@@ -11,12 +12,6 @@ const DURATIONS = [
   { label: '1시간 30분', min: 90 },
   { label: '직접', min: null },
 ]
-
-function formatMin(min) {
-  if (min < 60) return `${min}분`
-  if (min % 60 === 0) return `${min / 60}시간`
-  return `${Math.floor(min / 60)}시간 ${min % 60}분`
-}
 
 export default function Create({ durationMin, onChangeDuration, onNext }) {
   const [title, setTitle] = useState(MEETING.title)

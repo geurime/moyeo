@@ -807,7 +807,9 @@
   width: 100%;
   text-align: left;
   padding: var(--s4) var(--s4) var(--s4);
+  transition: background 0.15s ease;
 }
+.slot-summary:active { background: var(--surface-dim); }
 
 .slot-head {
   display: flex;
