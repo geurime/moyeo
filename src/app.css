@@ -408,8 +408,10 @@
   top: 0;
   z-index: 5;
   background: var(--surface);
-  margin: calc(var(--s3) * -1) calc(var(--s5) * -1) 0; /* 평소엔 위 패딩 상쇄 → 제목과 20px */
-  padding: var(--s3) var(--s5); /* 고정 시 위아래 여백 동일(12px) */
+  /* 평소: 위 패딩 상쇄로 제목과 20px, 아래는 패딩12+마진8 = 그룹과 20px
+     고정 시: 블록 안 위아래 12px 균형 (마진은 배경 밖이라 안 보임) */
+  margin: calc(var(--s3) * -1) calc(var(--s5) * -1) var(--s2);
+  padding: var(--s3) var(--s5);
   box-shadow: 0 1px 0 transparent;
   transition: box-shadow 0.2s ease;
 }
@@ -423,7 +425,7 @@
   gap: var(--s3);
   overflow-x: auto;
   scrollbar-width: none;
-  padding: var(--s3) 0 var(--s3); /* X 배지 위 여백 = 이름 아래 여백 */
+  padding: 2px 0 var(--s3); /* 평소 제목→아바타 22px(20 리듬), 고정 시 배지 위 11px */
 }
 .picked-inner::-webkit-scrollbar { display: none; }
 .picked-item { flex: none; }
@@ -444,8 +446,8 @@
 }
 .picked-x {
   position: absolute;
-  top: -3px;
-  right: -3px;
+  top: -2px; /* 스트립 위 여백(2px) 안에 정확히 들어오게 */
+  right: -2px;
   width: 16px;
   height: 16px;
   display: grid;
