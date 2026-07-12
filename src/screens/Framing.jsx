@@ -28,7 +28,6 @@ export default function Framing({ onNext }) {
         <button className="cta cta-light" onClick={onNext}>
           회의 만들기부터 시작
         </button>
-        <p className="narrator-hint">3분짜리 데모 · 화면은 직접 눌러볼 수 있어요</p>
       </div>
     </div>
   )
