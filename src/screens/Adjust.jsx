@@ -42,7 +42,6 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
               <motion.button
                 key={c.id}
                 whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 600, damping: 30 }}
                 className={`chip ${off ? 'chip-off' : `is-on ${c.kind === 'prefer' ? 'chip-prefer' : ''}`}`}
                 onClick={() => onToggleProfile(c.id)}
                 aria-pressed={!off}
@@ -64,7 +63,6 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
         <div className="chips chips-grid">
           {dayOptions.map((o) => (
             <motion.button key={o.id} whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 600, damping: 30 }}
               className={`chip chip-sm ${exceptions.includes(o.id) ? 'is-on' : ''}`}
               onClick={() => onToggleException(o.id)}
               aria-pressed={exceptions.includes(o.id)}
@@ -74,7 +72,6 @@ export default function Adjust({ profileOff, exceptions, onToggleProfile, onTogg
         <div className="chips chips-grid">
           {timeOptions.map((o) => (
             <motion.button key={o.id} whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 600, damping: 30 }}
               className={`chip chip-sm ${exceptions.includes(o.id) ? 'is-on' : ''}`}
               onClick={() => onToggleException(o.id)}
               aria-pressed={exceptions.includes(o.id)}

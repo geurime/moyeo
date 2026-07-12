@@ -80,7 +80,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
               className={`slot-card ${i === 0 ? 'is-top' : ''}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08, type: 'spring', stiffness: 320, damping: 30 }}
+              transition={{ delay: i * 0.07, duration: 0.3, ease: [0.2, 0, 0, 1] }}
             >
               <button className="slot-summary" onClick={() => setOpenIndex(open ? -1 : i)} aria-expanded={open}>
                 <div className="slot-head">
@@ -99,9 +99,9 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                         key={s.person.id}
                         className={`dot dot-${s.status}`}
                         title={`${s.person.name} · ${STATUS_LABEL[s.status]}`}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: i * 0.08 + 0.12 + j * 0.035, type: 'spring', stiffness: 520, damping: 26 }}
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: i * 0.07 + 0.12 + j * 0.03, duration: 0.2, ease: [0.2, 0, 0, 1] }}
                       >
                         {s.person.initial}
                       </motion.span>
@@ -130,7 +130,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ type: 'spring', stiffness: 420, damping: 38 }}
+                    transition={{ duration: 0.26, ease: [0.2, 0, 0, 1] }}
                     style={{ overflow: 'hidden' }}
                   >
                     <div className="detail">

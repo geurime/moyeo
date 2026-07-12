@@ -132,6 +132,7 @@ export default function App() {
                   onAddPerson={(c) => setPeople((ps) => [...ps, withRole(c)])}
                   onAddMany={(cs) => setPeople((ps) => [...ps, ...cs.map(withRole)])}
                   onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
+                  onRemoveMany={(ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))}
                   onNext={next}
                 />
               )}
