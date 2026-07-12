@@ -829,10 +829,10 @@
   font-weight: 700;
   flex: none;
 }
-.dot-ok { background: var(--go); color: #fff; }
-.dot-reluctant { background: var(--warn-tint); color: var(--warn); box-shadow: inset 0 0 0 1.5px var(--warn); }
-.dot-absent { background: transparent; color: var(--sub); box-shadow: inset 0 0 0 1.5px var(--line); text-decoration: line-through; }
-.dot-calendar-only { background: var(--go-tint); color: var(--go); box-shadow: inset 0 0 0 1.5px var(--go); }
+/* 도트도 칩과 같은 문법 — 채움 = 온전한 참석, 아웃라인 = 아쉬움, 빈 회색 = 불참 */
+.dot-ok, .dot-calendar-only { background: var(--go); color: #fff; }
+.dot-reluctant { background: var(--surface); color: var(--go); box-shadow: inset 0 0 0 1.5px var(--go); }
+.dot-absent { background: transparent; color: var(--sub); box-shadow: inset 0 0 0 1.5px #d9dce0; }
 
 .dot-sm { width: 24px; height: 24px; }
 
@@ -855,7 +855,7 @@
   margin-top: 3px;
   word-break: keep-all;
 }
-.tradeoff-avoid { color: var(--warn); }
+.tradeoff-avoid { color: var(--sub); }
 .tradeoff-absent { color: var(--sub); }
 .tradeoff-clear { color: var(--go); }
 .tradeoff-ledger { color: var(--go); font-weight: 600; }
@@ -867,9 +867,7 @@
 
 .detail-list {
   list-style: none;
-  background: var(--surface-dim);
-  border-radius: var(--r-inner);
-  padding: var(--s2) var(--s3);
+  border-top: 1px solid var(--line);
   margin-bottom: var(--s3);
 }
 
@@ -877,7 +875,7 @@
   display: flex;
   align-items: center;
   gap: var(--s3);
-  padding: var(--s2) 0;
+  padding: var(--s3) 0;
 }
 .detail-row + .detail-row { border-top: 1px solid var(--line); }
 
@@ -893,7 +891,7 @@
 
 .detail-status { font: var(--t-cap); }
 .status-ok, .status-calendar-only { color: var(--go); font-weight: 600; }
-.status-reluctant { color: var(--warn); font-weight: 600; }
+.status-reluctant { color: var(--sub); font-weight: 600; }
 .status-absent { color: var(--sub); }
 
 .logic-note {
@@ -949,7 +947,7 @@
   padding: var(--s4);
   margin-bottom: var(--s3);
 }
-.msg-card.msg-warn { background: var(--warn-tint); }
+.msg-card.msg-warn { background: var(--surface-dim); }
 
 .msg-label {
   font: var(--t-cap);
@@ -957,7 +955,7 @@
   color: var(--sub);
   margin-bottom: var(--s2);
 }
-.msg-warn .msg-label { color: var(--warn); }
+.msg-warn .msg-label { color: var(--go); }
 
 .msg-body { font: var(--t-body); word-break: keep-all; }
 
