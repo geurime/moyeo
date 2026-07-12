@@ -78,7 +78,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
     <div className="product">
       <header className="screen-head">
         <h1 className="screen-title">모두가 괜찮은 시간을 찾았어요</h1>
-        <p className="screen-sub">모두의 확인을 받아, 필수 인원이 되는 시간만 남겼어요</p>
+        <p className="screen-sub">어떤 후보든 필수는 전원 참석이에요</p>
       </header>
 
       <div className="slot-list" role="radiogroup" aria-label="후보 시간">
