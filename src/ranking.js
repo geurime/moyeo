@@ -76,7 +76,9 @@ export function rankSlots(people, yourChips = [], durationMin = 60) {
           status = 'absent' // 불참 (선택 인원)
           score += SCORE.OPTIONAL_BUSY
         } else if (avoids.length > 0) {
-          status = 'reluctant' // 참석하지만 비선호
+          // 요일 제약(외근류)은 참석 자체가 불확실 → '불참 예상'.
+          // 감점 위계: 확정 불참(-40) > 불참 예상 > 단순 비선호(-12)
+          status = avoids.some((c) => c.group === 'day') ? 'unlikely' : 'reluctant'
           const weight = hasLedger ? SCORE.CONCESSION_MULTIPLIER : 1
           score += SCORE.AVOID * avoids.length * weight
         } else {
@@ -87,7 +89,7 @@ export function rankSlots(people, yourChips = [], durationMin = 60) {
         statuses.push({
           person: p,
           status,
-          ledgerWeighted: status === 'reluctant' && hasLedger,
+          ledgerWeighted: (status === 'reluctant' || status === 'unlikely') && hasLedger,
           avoids: avoids.map((c) => c.short),
           prefers: prefers.map((c) => c.short),
         })

@@ -5,21 +5,18 @@ import { DAYS } from '../data.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
-function Shield() {
-  return (
-    <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
-      <path d="M6 1 L10 2.5 V6 C10 8.5 8.2 10.3 6 11 C3.8 10.3 2 8.5 2 6 V2.5 Z" fill="currentColor" opacity="0.9" />
-      <path d="M4.2 6 L5.5 7.3 L7.9 4.9" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 // 요약 한 줄 — 이 카드에서 읽어야 할 유일한 문장
 function summarize(slot, total) {
   const absent = slot.statuses.filter((s) => s.status === 'absent')
+  const unlikely = slot.statuses.filter((s) => s.status === 'unlikely')
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
+  const sure = total - absent.length - unlikely.length
+
   if (absent.length > 0) {
-    return `${absent.map((s) => s.person.name).join('·')}님 불참 · ${slot.attendCount}명 참석`
+    return `${absent.map((s) => s.person.name).join('·')}님 불참 · ${sure}명 참석`
+  }
+  if (unlikely.length > 0) {
+    return `${unlikely.map((s) => s.person.name).join('·')}님 불참 예상 · ${sure}명 참석`
   }
   if (reluctant.length === 1) return `전원 참석 · ${reluctant[0].person.name}님만 아쉬워요`
   if (reluctant.length > 1) return `전원 참석 · ${reluctant.length}명이 아쉬워요`
@@ -28,6 +25,7 @@ function summarize(slot, total) {
 
 function statusText(s) {
   if (s.status === 'absent') return '불참'
+  if (s.status === 'unlikely') return `불참 예상 · ${s.avoids[0]}`
   if (s.status === 'reluctant') return `참석 · ${s.avoids[0]}`
   if (s.prefers.length > 0) return '참석 · 선호와 맞아요'
   return '참석'
@@ -122,7 +120,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                               {s.person.name}
                               <span className="mini-role">{s.person.required ? '필수' : '선택'}</span>
                               {s.ledgerWeighted && (
-                                <span className="info-tag tag-care"><Shield />양보 배려</span>
+                                <span className="info-tag tag-care">양보</span>
                               )}
                             </span>
                             <span className="mini-status">{statusText(s)}</span>
