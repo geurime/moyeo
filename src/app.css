@@ -408,7 +408,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--s3);
-  padding-bottom: var(--s5);
+  padding: 6px 0 var(--s5); /* X 배지가 위로 튀어나오는 만큼 확보 */
 }
 .picked-item {
   display: flex;
