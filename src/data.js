@@ -40,7 +40,13 @@ export const COLLEAGUES = [
   { id: 'taeo',    name: '태오', initial: '태', responded: true,  lastRole: null },
 ]
 
-// 지난 킥오프 멤버 — 벌크 추가 칩의 대상.
+// 그룹 — 팀 단위로 한 번에 추가. 회사에서 사람을 부르는 실제 단위.
+export const GROUPS = [
+  { id: 'product', name: '프로덕트팀', memberIds: ['seoyeon', 'junho', 'minsu', 'haeun', 'jiyeon'] },
+  { id: 'growth',  name: '그로스팀',   memberIds: ['dahye', 'taeo'] },
+]
+
+// 지난 킥오프 멤버 — 시나리오 명단 구성용.
 export const LAST_MEETING_IDS = ['seoyeon', 'junho', 'minsu', 'haeun', 'jiyeon']
 
 // 시나리오 완성 상태의 6인 명단 — 검증 스크립트와 데모 점프(도트 이동)용.

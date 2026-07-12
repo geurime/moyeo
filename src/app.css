@@ -440,20 +440,16 @@
   font-weight: 700;
 }
 
-/* 지난 멤버 벌크 추가 */
-.bulk-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s2);
-  padding: var(--s2) var(--s3);
-  border-radius: var(--r-pill);
-  background: var(--go-tint);
-  color: var(--go);
-  font: var(--t-cap);
-  font-weight: 700;
-  margin-bottom: var(--s5);
+/* 그룹 — 팀 단위 추가. 아바타 스택으로 구성 미리보기 */
+.group-list { margin-bottom: var(--s5); }
+.avatar-stack { display: flex; flex: none; }
+.avatar-stack .avatar {
+  width: 30px;
+  height: 30px;
+  font-size: 0.6875rem;
+  border: 2px solid var(--surface);
 }
-.bulk-icon { font-size: 1rem; }
+.avatar-stack .avatar + .avatar { margin-left: -8px; }
 
 /* 동료 리스트 — 탭하면 추가 */
 .person-add-row {

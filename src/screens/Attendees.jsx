@@ -1,21 +1,24 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { COLLEAGUES, LAST_MEETING_IDS } from '../data.js'
+import { COLLEAGUES, GROUPS } from '../data.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
-// 화면 ①: 누구와 모여요? — 명단 만들기.
-// 브라우즈(동료 리스트) 우선, 검색은 롱테일. 지난 멤버는 벌크 칩 한 번에.
+// 화면 ①: 참석자 — 명단 만들기.
+// 그룹(팀 단위) 우선, 개인은 리스트에서 탭, 롱테일은 검색.
 export default function Attendees({ people, onAddPerson, onAddMany, onRemovePerson, onNext }) {
   const [query, setQuery] = useState('')
   const remaining = COLLEAGUES.filter((c) => !people.some((p) => p.id === c.id))
   const results = remaining.filter((c) => !query || c.name.includes(query.trim()))
-  const lastMembersLeft = remaining.filter((c) => LAST_MEETING_IDS.includes(c.id))
+  const groups = GROUPS.map((g) => ({
+    ...g,
+    left: remaining.filter((c) => g.memberIds.includes(c.id)),
+  })).filter((g) => g.left.length > 0)
 
   return (
     <div className="product">
       <header className="screen-head">
-        <h1 className="screen-title">누구와 모여요?</h1>
+        <h1 className="screen-title">참석자</h1>
       </header>
 
       <div className="search">
@@ -56,15 +59,39 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
         </AnimatePresence>
       </div>
 
-      {!query && lastMembersLeft.length > 1 && (
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          className="bulk-chip"
-          onClick={() => onAddMany(lastMembersLeft)}
-        >
-          <span className="bulk-icon" aria-hidden="true">↺</span>
-          지난 킥오프 멤버 {lastMembersLeft.length}명 한 번에 추가
-        </motion.button>
+      {!query && groups.length > 0 && (
+        <>
+          <div className="section-head">
+            <h2 className="section-title">그룹</h2>
+          </div>
+          <ul className="person-list group-list">
+            <AnimatePresence initial={false}>
+              {groups.map((g) => (
+                <motion.li
+                  key={g.id}
+                  className="person-row"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={EASE}
+                >
+                  <button className="person-row-inner person-add-row" onClick={() => onAddMany(g.left)}>
+                    <span className="avatar-stack">
+                      {g.left.slice(0, 3).map((m) => (
+                        <span key={m.id} className="avatar">{m.initial}</span>
+                      ))}
+                    </span>
+                    <span className="person-name">
+                      {g.name}
+                      <span className="tag">{g.left.length}명</span>
+                    </span>
+                    <span className="add-mark" aria-hidden="true">＋</span>
+                  </button>
+                </motion.li>
+              ))}
+            </AnimatePresence>
+          </ul>
+        </>
       )}
 
       <div className="section-head">
