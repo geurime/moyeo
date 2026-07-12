@@ -193,9 +193,9 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
                       left: `${(bandFirst / 7) * 100}%`,
                       width: `${((bandLast - bandFirst + 1) / 7) * 100}%`,
                     }}
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
                     aria-hidden="true"
                   />
                 )}

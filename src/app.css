@@ -745,7 +745,6 @@
   bottom: 0;
   background: var(--go-tint);
   border-radius: var(--r-pill);
-  transform-origin: left;
 }
 
 .cal-num {
