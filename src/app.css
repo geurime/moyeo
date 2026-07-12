@@ -764,15 +764,18 @@
   margin-bottom: var(--s2);
 }
 
+/* 순위 — 1위만 필 배지, 나머지는 조용한 텍스트 */
 .rank-pill {
   font: var(--t-cap);
   font-weight: 700;
   color: var(--sub);
-  background: var(--surface-dim);
-  border-radius: var(--r-pill);
-  padding: 3px var(--s2);
 }
-.rank-pill.is-top { background: var(--go); color: #fff; }
+.rank-pill.is-top {
+  background: var(--go);
+  color: #fff;
+  border-radius: var(--r-pill);
+  padding: 3px var(--s3);
+}
 
 .slot-day { font: var(--t-cap); font-weight: 600; color: var(--sub); }
 
@@ -825,21 +828,32 @@
 }
 .attend-label.is-full { color: var(--go); }
 
-.reason {
-  border-top: 1px solid var(--line);
-  padding-top: var(--s3);
-}
+.reason { padding-top: var(--s2); }
 .reason-headline { font: var(--t-body); font-weight: 700; }
 
-.tradeoff {
-  font: var(--t-cap);
-  margin-top: 3px;
-  word-break: keep-all;
+/* 사유 태그 — 문장 대신 스캔형 태그. 배려는 실드와 틸. */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--s2);
 }
-.tradeoff-avoid { color: var(--sub); }
-.tradeoff-absent { color: var(--sub); }
-.tradeoff-clear { color: var(--go); }
-.tradeoff-ledger { color: var(--go); font-weight: 600; }
+.info-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px solid #e2e5e9;
+  font: var(--t-cap);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sub);
+}
+.info-tag.tag-care {
+  border-color: rgba(11, 122, 99, 0.3);
+  color: var(--go);
+}
 
 .detail {
   padding: 0 var(--s4) var(--s4);

@@ -9,7 +9,20 @@ const STATUS_LABEL = {
   ok: '참석',
   reluctant: '참석 · 아쉬움',
   absent: '불참',
-  'calendar-only': '참석 · 캘린더 기준',
+  'calendar-only': '참석',
+}
+
+function Shield() {
+  return (
+    <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
+      <path
+        d="M6 1 L10 2.5 V6 C10 8.5 8.2 10.3 6 11 C3.8 10.3 2 8.5 2 6 V2.5 Z"
+        fill="currentColor"
+        opacity="0.9"
+      />
+      <path d="M4.2 6 L5.5 7.3 L7.9 4.9" fill="none" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
 }
 
 export default function Ranking({ people, yourChips, durationMin, onReduceDuration, onConfirm }) {
@@ -101,14 +114,23 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                 </div>
                 <div className="reason">
                   <p className="reason-headline">{reason.headline}</p>
-                  {reason.tradeoffs.map((t, j) => (
-                    <p key={j} className={`tradeoff tradeoff-${t.kind}`}>{t.text}</p>
-                  ))}
-                  {ledgered.map((s) => (
-                    <p key={s.person.id} className="tradeoff tradeoff-ledger">
-                      {s.person.name}님은 {s.person.concessionNote} — 이번엔 더 무겁게 반영했어요
-                    </p>
-                  ))}
+                  <div className="tag-row">
+                    {slot.statuses.filter((s) => s.status === 'absent').map((s) => (
+                      <span key={s.person.id} className="info-tag">{s.person.name} · 불참</span>
+                    ))}
+                    {slot.statuses.filter((s) => s.status === 'reluctant').map((s) => (
+                      <span key={s.person.id} className="info-tag">{s.person.name} · {s.avoids[0]}</span>
+                    ))}
+                    {ledgered.map((s) => (
+                      <span key={`l-${s.person.id}`} className="info-tag tag-care">
+                        <Shield />
+                        {s.person.name} · 양보 배려
+                      </span>
+                    ))}
+                    {slot.statuses.every((s) => s.status === 'ok' || s.status === 'calendar-only') && (
+                      <span className="info-tag tag-care">아쉬운 사람 없음</span>
+                    )}
+                  </div>
                 </div>
               </button>
 
@@ -129,11 +151,13 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                             <span className="detail-name">
                               {s.person.name}
                               <span className="detail-role">{s.person.required ? '필수' : '선택'}</span>
+                              {s.ledgerWeighted && (
+                                <span className="info-tag tag-care"><Shield />양보 배려</span>
+                              )}
                             </span>
                             <span className={`detail-status status-${s.status}`}>
                               {s.status === 'reluctant' ? `참석 · ${s.avoids[0]}` : STATUS_LABEL[s.status]}
                               {s.status === 'ok' && s.prefers.length > 0 && ' · 선호와 맞아요'}
-                              {s.ledgerWeighted && ' · 양보 기록 반영'}
                             </span>
                           </li>
                         ))}
