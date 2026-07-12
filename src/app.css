@@ -187,7 +187,6 @@
 
 .narrator-display {
   font: var(--t-display);
-  font-size: 2.125rem; /* 34 — 커버는 표지답게 */
   letter-spacing: -0.02em;
   margin-bottom: var(--s5);
   word-break: keep-all;
@@ -567,7 +566,7 @@
 /* 캘린더 자동 반영 — 미니 주간 타임라인. 바쁨을 텍스트가 아니라 공간으로. */
 .autocal {
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--r-card);
   padding: var(--s4);
   margin-bottom: var(--s6);
 }
@@ -683,7 +682,7 @@
 .cal {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--r-card);
   padding: var(--s4) var(--s3) var(--s3);
   margin-top: var(--s3);
 }
@@ -868,11 +867,6 @@
   align-items: center;
   gap: 3px;
   text-align: center;
-}
-.mini-person .avatar {
-  width: 34px;
-  height: 34px;
-  font-size: 0.75rem;
 }
 /* 참석 = 무장식 기본 원. 링은 예외(부재)에만 — 점선 = 빈 자리 */
 .mini-person.is-absent .avatar {
