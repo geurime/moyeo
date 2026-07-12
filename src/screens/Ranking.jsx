@@ -5,20 +5,21 @@ import { DAYS } from '../data.js'
 
 const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
 
-// 요약 한 줄 — 이 카드에서 읽어야 할 유일한 문장
+// 요약 한 줄 — 고정 문형: [참석 현황] · [설명]
 function summarize(slot, total) {
   const absent = slot.statuses.filter((s) => s.status === 'absent')
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
   const sure = total - absent.length
 
-  if (absent.length > 0) {
+  const parts = [absent.length === 0 ? '전원 참석' : `${sure}명 참석`]
+  for (const s of absent) {
     // 불참자의 역할(선택)은 "그래서 괜찮다"의 근거 — 요약에서 바로 답한다
-    const names = absent.map((s) => `${s.person.name}님${s.person.required ? '' : '(선택)'}`).join(' · ')
-    return `${names} 불참 · ${sure}명 참석`
+    parts.push(`${s.person.name}님${s.person.required ? '' : '(선택)'} 불참`)
   }
-  if (reluctant.length === 1) return `전원 참석 · ${reluctant[0].person.name}님만 아쉬워요`
-  if (reluctant.length > 1) return `전원 참석 · ${reluctant.length}명이 아쉬워요`
-  return `전원 ${total}명 참석 · 모두 괜찮아요`
+  if (reluctant.length === 1) parts.push(`${reluctant[0].person.name}님이 아쉬워요`)
+  if (reluctant.length > 1) parts.push(`${reluctant.length}명이 아쉬워요`)
+  if (parts.length === 1) parts.push('모두 괜찮아요')
+  return parts.join(' · ')
 }
 
 function statusText(s) {
@@ -118,10 +119,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                                 <span className="mini-pnote">{s.avoids[0]}</span>
                               )}
                               {s.status === 'absent' && (
-                                <>
-                                  {!s.person.required && <span className="mini-pnote">선택</span>}
-                                  <span className="mini-pnote">{s.avoids[0] || '일정 겹침'}</span>
-                                </>
+                                <span className="mini-pnote">{s.avoids[0] || '일정 겹침'}</span>
                               )}
                             </div>
                           ))}
