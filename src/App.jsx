@@ -5,32 +5,48 @@ import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
 import Attendees from './screens/Attendees.jsx'
 import Roles from './screens/Roles.jsx'
-import Interstitial from './screens/Interstitial.jsx'
 import Adjust from './screens/Adjust.jsx'
 import Ranking from './screens/Ranking.jsx'
 import Confirmed from './screens/Confirmed.jsx'
 
-const STEPS = ['framing', 'create', 'attendees', 'roles', 'sent', 'adjust', 'collected', 'ranking', 'confirmed']
+const STEPS = ['framing', 'create', 'attendees', 'roles', 'adjust', 'ranking', 'confirmed']
 
-// 데모 내레이션 — 화자가 바뀌는 지점을 다크 화면으로 분리한다.
-const NARRATIONS = {
-  sent: {
-    kicker: '확인 요청',
-    lines: [
-      '5명에게 확인을 보냈어요.',
-      '바쁜 시간은 캘린더가, 성향은 지난 응답이 이미 알고 있어요. 그래서 물어볼 건 하나뿐이에요 — 다음 주, 평소와 달라요?',
-    ],
-    handoff: '이번엔 확인 요청을 받은 서연의 화면이에요.',
-    cta: '서연의 화면으로',
+// 좌측 패널 — 설명은 제품 밖에서. 단계당 1~2문장만.
+const PANEL = {
+  framing: {
+    name: '인트로',
+    who: null,
+    text: '같은 회사 6명이 다음 주까지 모여야 해요. 조건은 제각각 — 캘린더는 빈 시간을 알지만, 괜찮은 시간은 모르죠.',
   },
-  collected: {
-    kicker: '후보 생성',
-    lines: [
-      '서연은 탭 한 번으로 끝났어요.',
-      '5명 모두 확인했어요 — 이렇게 응답이 가벼우니 다 모여요. 전원의 확인 위에서 후보가 만들어졌어요.',
-    ],
-    handoff: '다시 주최자, 지민의 화면이에요.',
-    cta: '후보 시간 보기',
+  create: {
+    name: '새 일정',
+    who: '지민 · 주최자',
+    text: '무엇을, 얼마나, 언제까지. 기간은 캘린더에서 바로 봐요.',
+  },
+  attendees: {
+    name: '참석자',
+    who: '지민 · 주최자',
+    text: '그룹으로 한 번에, 검색으로 낱낱이. 명단을 만들어요.',
+  },
+  roles: {
+    name: '꼭 와야 하는 사람',
+    who: '지민 · 주최자',
+    text: '가중치를 정해요. 역할 기본값은 지난 회의에서 학습돼 있어요.',
+  },
+  adjust: {
+    name: '서연의 확인',
+    who: '서연 · 참석자',
+    text: '바쁜 시간은 캘린더가, 성향은 지난 응답이 이미 알아요. 이번 주 다른 것만 확인 — 탭 한 번이면 끝.',
+  },
+  ranking: {
+    name: '후보 선택',
+    who: '지민 · 주최자',
+    text: '전원의 확인 위에서 후보가 나와요. 누가 무엇을 감수하는지 근거와 함께 — 주최자는 결정만 해요.',
+  },
+  confirmed: {
+    name: '확정',
+    who: '지민 · 주최자',
+    text: '초대장엔 이유가 담기고, 양보는 기록돼요. 조건은 학습되니 다음 회의는 더 쉬워져요.',
   },
 }
 
@@ -42,6 +58,7 @@ export default function App() {
   const [confirmedSlot, setConfirmedSlot] = useState(null)
 
   const step = STEPS[stepIndex]
+  const panel = PANEL[step]
 
   // 서연의 이번 주 조건 — 켜진 칩 그대로
   const yourChips = useMemo(
@@ -58,131 +75,111 @@ export default function App() {
     setConfirmedSlot(null)
   }
 
-  // 도트로 뒤 단계에 바로 점프할 때 — 명단이 비어 있으면 시나리오 상태로 채운다
+  // 목차로 뒤 단계에 바로 점프할 때 — 명단이 비어 있으면 시나리오 상태로 채운다
   const jumpTo = (i) => {
-    if (i >= STEPS.indexOf('sent') && people.length < 3) setPeople(PEOPLE)
+    if (i >= STEPS.indexOf('adjust') && people.length < 3) setPeople(PEOPLE)
     setStepIndex(i)
   }
-
-  // 지난 회의 역할 기억으로 추가 — lastRole이 'optional'이면 선택으로
-  const withRole = (c) => ({ ...c, required: c.lastRole !== 'optional' })
 
   const toggleIn = (setter) => (id) =>
     setter((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
 
-  const viewpoint = {
-    create: '지민 — 주최자의 화면',
-    attendees: '지민 — 주최자의 화면',
-    roles: '지민 — 주최자의 화면',
-    adjust: '서연 — 참석자의 화면',
-    ranking: '지민 — 주최자의 화면',
-    confirmed: '지민 — 주최자의 화면',
-  }[step]
-
-  const dark = step === 'framing' || step === 'sent' || step === 'collected'
-
   return (
     <MotionConfig reducedMotion="user">
       <div className="stage">
-        <div className={`phone ${dark ? 'phone-dark' : ''}`}>
-          <AnimatePresence initial={false}>
-            {viewpoint && (
-              <motion.div
-                className="viewpoint"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.span
-                    key={viewpoint}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.15 }}
-                  >
-                    {viewpoint}
-                  </motion.span>
-                </AnimatePresence>
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* 좌측 패널 — 내레이션과 목차. 제품(폰)은 100% 제품으로 */}
+        <aside className="panel">
+          <div className="brand brand-ink">모여<span className="brand-dot" aria-hidden="true" /></div>
 
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              className="screen"
               key={step}
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: [0.2, 0, 0, 1] }}
+              className="panel-body"
             >
-              {step === 'framing' && <Framing onNext={next} />}
-              {step === 'create' && (
-                <Create durationMin={durationMin} onChangeDuration={setDurationMin} onNext={next} />
-              )}
-              {step === 'attendees' && (
-                <Attendees
-                  people={people}
-                  onAddPerson={(c) => setPeople((ps) => [...ps, withRole(c)])}
-                  onAddMany={(cs) => setPeople((ps) => [...ps, ...cs.map(withRole)])}
-                  onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
-                  onRemoveMany={(ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))}
-                  onNext={next}
-                />
-              )}
-              {step === 'roles' && (
-                <Roles
-                  people={people}
-                  onTogglePerson={(id) =>
-                    setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
-                  }
-                  onNext={next}
-                />
-              )}
-              {(step === 'sent' || step === 'collected') && (
-                <Interstitial
-                  narration={
-                    step === 'sent'
-                      ? { ...NARRATIONS.sent, lines: [`${people.length - 1}명에게 확인을 보냈어요.`, NARRATIONS.sent.lines[1]] }
-                      : NARRATIONS.collected
-                  }
-                  onNext={next}
-                />
-              )}
-              {step === 'adjust' && (
-                <Adjust
-                  durationMin={durationMin}
-                  chipIds={chipIds}
-                  onToggle={toggleIn(setChipIds)}
-                  onNext={next}
-                />
-              )}
-              {step === 'ranking' && (
-                <Ranking people={people} yourChips={yourChips} durationMin={durationMin}
-                  onReduceDuration={() => setDurationMin(60)}
-                  onConfirm={(slot) => { setConfirmedSlot(slot); next() }} />
-              )}
-              {step === 'confirmed' && (
-                <Confirmed slot={confirmedSlot} durationMin={durationMin} onReset={reset} />
-              )}
+              {panel.who && <p className="panel-who">{panel.who}</p>}
+              <p className="panel-text">{panel.text}</p>
             </motion.div>
           </AnimatePresence>
-        </div>
 
-        <div className="demo-rail" role="navigation" aria-label="데모 진행">
-          {STEPS.map((s, i) => (
-            <button
-              key={s}
-              className={`demo-dot ${i === stepIndex ? 'is-active' : ''} ${i < stepIndex ? 'is-done' : ''}`}
-              aria-label={`${i + 1}단계로 이동`}
-              onClick={() => jumpTo(i)}
-            />
-          ))}
-          <button className="demo-reset" onClick={reset}>처음부터</button>
+          <nav className="panel-toc" aria-label="데모 단계">
+            {STEPS.map((s, i) => (
+              <button
+                key={s}
+                className={`toc-item ${i === stepIndex ? 'is-now' : ''} ${i < stepIndex ? 'is-done' : ''}`}
+                onClick={() => jumpTo(i)}
+              >
+                {PANEL[s].name}
+              </button>
+            ))}
+          </nav>
+
+          <button className="panel-reset" onClick={reset}>처음부터</button>
+        </aside>
+
+        <div className="phone-col">
+          <div className={`phone ${step === 'framing' ? 'phone-dark' : ''}`}>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                className="screen"
+                key={step}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
+              >
+                {step === 'framing' && <Framing onNext={next} />}
+                {step === 'create' && (
+                  <Create durationMin={durationMin} onChangeDuration={setDurationMin} onNext={next} />
+                )}
+                {step === 'attendees' && (
+                  <Attendees
+                    people={people}
+                    onAddPerson={(c) => setPeople((ps) => [...ps, withRole(c)])}
+                    onAddMany={(cs) => setPeople((ps) => [...ps, ...cs.map(withRole)])}
+                    onRemovePerson={(id) => setPeople((ps) => ps.filter((p) => p.id !== id))}
+                    onRemoveMany={(ids) => setPeople((ps) => ps.filter((p) => !ids.includes(p.id)))}
+                    onNext={next}
+                  />
+                )}
+                {step === 'roles' && (
+                  <Roles
+                    people={people}
+                    onTogglePerson={(id) =>
+                      setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))
+                    }
+                    onNext={next}
+                  />
+                )}
+                {step === 'adjust' && (
+                  <Adjust
+                    durationMin={durationMin}
+                    chipIds={chipIds}
+                    onToggle={toggleIn(setChipIds)}
+                    onNext={next}
+                  />
+                )}
+                {step === 'ranking' && (
+                  <Ranking people={people} yourChips={yourChips} durationMin={durationMin}
+                    onReduceDuration={() => setDurationMin(60)}
+                    onConfirm={(slot) => { setConfirmedSlot(slot); next() }} />
+                )}
+                {step === 'confirmed' && (
+                  <Confirmed slot={confirmedSlot} durationMin={durationMin} onReset={reset} />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          <button className="mobile-reset" onClick={reset}>처음부터</button>
         </div>
       </div>
     </MotionConfig>
   )
 }
+
+// 지난 회의 역할 기억으로 추가 — lastRole이 'optional'이면 선택으로
+const withRole = (c) => ({ ...c, required: c.lastRole !== 'optional' })

@@ -12,7 +12,9 @@ const item = {
 export default function Confirmed({ slot, durationMin, onReset }) {
   if (!slot) return null
   const date = DAYS.find((d) => d.key === slot.day)?.date
-  const when = `${DAY_FULL[slot.day]} ${date} · ${slot.hour}:00–${endLabel(slot.hour, durationMin)}`
+  const dateLabel = `7월 ${date.split('/')[1]}일 ${DAY_FULL[slot.day]}`
+  const timeLabel = `${slot.hour}:00–${endLabel(slot.hour, durationMin)}`
+  const when = `${dateLabel} ${timeLabel}`
 
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
   const absent = slot.statuses.filter((s) => s.status === 'absent')
@@ -30,7 +32,8 @@ export default function Confirmed({ slot, durationMin, onReset }) {
           <circle className="check-circle" cx="32" cy="32" r="29" />
           <path className="check-mark" d="M20 33.5 L28.5 42 L44 24.5" />
         </svg>
-        <motion.h1 variants={item} className="screen-title">{when}<br />확정했어요</motion.h1>
+        <motion.p variants={item} className="confirm-over">{dateLabel}</motion.p>
+        <motion.h1 variants={item} className="screen-title">{timeLabel} 확정했어요</motion.h1>
         <motion.p variants={item} className="screen-sub">
           초대장에 <strong>왜 이 시간인지</strong>도 함께 담아 보내요
         </motion.p>
@@ -72,14 +75,8 @@ export default function Confirmed({ slot, durationMin, onReset }) {
         </motion.div>
       ))}
 
-      <motion.div variants={item} className="end-card">
-        <p className="end-kicker">데모 끝</p>
-        <p className="end-body">
-          조건은 학습되고, 양보는 기억되고,
-          <br />
-          결정엔 근거가 남아요. 이게 ‘모여’예요.
-        </p>
-        <motion.button whileTap={{ scale: 0.98 }} className="cta cta-light" onClick={onReset}>
+      <motion.div variants={item} className="cta-dock">
+        <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onReset}>
           처음부터 다시 보기
         </motion.button>
       </motion.div>
