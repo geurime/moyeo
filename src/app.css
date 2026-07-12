@@ -402,14 +402,31 @@
   padding: var(--s4) 0;
 }
 
-/* 고른 사람 — 아바타 스트립 (탭하면 빼기). 비어 있으면 접힘 */
+/* 고정 헤더 — 검색 + 스트립이 함께 고정, 리스트만 스크롤 (카톡 패턴) */
+.pin-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--surface);
+  margin: calc(var(--s3) * -1) calc(var(--s5) * -1) 0; /* 평소엔 위 패딩 상쇄 → 제목과 20px */
+  padding: var(--s3) var(--s5); /* 고정 시 위아래 여백 동일(12px) */
+  box-shadow: 0 1px 0 transparent;
+  transition: box-shadow 0.2s ease;
+}
+.pin-head.is-stuck { box-shadow: 0 1px 0 var(--line); } /* 스크롤 중일 때만 층 구분 */
+.pin-head .search { margin-bottom: 0; }
+
 .picked { overflow: hidden; }
 .picked-inner {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--s3);
-  padding: 6px 0 var(--s5); /* X 배지가 위로 튀어나오는 만큼 확보 */
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: var(--s3) 0 var(--s3); /* X 배지 위 여백 = 이름 아래 여백 */
 }
+.picked-inner::-webkit-scrollbar { display: none; }
+.picked-item { flex: none; }
 .picked-item {
   display: flex;
   flex-direction: column;

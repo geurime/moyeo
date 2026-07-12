@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { COLLEAGUES, GROUPS } from '../data.js'
 
@@ -20,9 +20,28 @@ function CheckMark({ on }) {
 // 리스트는 불변, 상태만 토글(체크). 그룹은 멤버 전원 토글. 스트립은 요약 + 빠른 제거.
 export default function Attendees({ people, onAddPerson, onAddMany, onRemovePerson, onRemoveMany, onNext }) {
   const [query, setQuery] = useState('')
+  const [stuck, setStuck] = useState(false) // 리스트가 고정 헤더 밑을 지나는 중인지
+  const stripRef = useRef(null)
+  const sentinelRef = useRef(null)
+
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => setStuck(!e.isIntersecting),
+      { root: el.closest('.screen'), threshold: 0 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
   const isIn = (id) => people.some((p) => p.id === id)
   const results = COLLEAGUES.filter((c) => !query || c.name.includes(query.trim()))
   const picked = people.filter((p) => !p.isHost)
+
+  // 새로 고른 사람이 보이도록 스트립을 끝으로
+  useEffect(() => {
+    stripRef.current?.scrollTo({ left: 10000, behavior: 'smooth' })
+  }, [picked.length])
 
   const toggle = (c) => (isIn(c.id) ? onRemovePerson(c.id) : onAddPerson(c))
   const toggleGroup = (g) => {
@@ -38,54 +57,57 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
         <h1 className="screen-title">참석자</h1>
       </header>
 
-      <div className="search">
-        <span className="search-icon" aria-hidden="true">
-          <svg viewBox="0 0 20 20" width="16" height="16">
-            <circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" strokeWidth="2" />
-            <line x1="13.5" y1="13.5" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </span>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="이름으로 검색"
-          aria-label="동료 검색"
-        />
-      </div>
+      {/* 고정 헤더 — 고른 사람 스트립(결과) + 검색(도구, 리스트와 인접). */}
+      <div ref={sentinelRef} aria-hidden="true" />
+      <div className={`pin-head ${stuck ? 'is-stuck' : ''}`}>
+        <AnimatePresence initial={false}>
+          {picked.length > 0 && (
+            <motion.div
+              className="picked"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={EASE}
+            >
+              <div className="picked-inner" ref={stripRef}>
+                <AnimatePresence initial={false}>
+                  {picked.map((p) => (
+                    <motion.button
+                      key={p.id}
+                      className="picked-item"
+                      initial={{ opacity: 0, scale: 0.6 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.6 }}
+                      transition={EASE}
+                      onClick={() => onRemovePerson(p.id)}
+                      aria-label={`${p.name} 빼기`}
+                    >
+                      <span className="avatar">{p.initial}</span>
+                      <span className="picked-name">{p.name}</span>
+                      <span className="picked-x" aria-hidden="true">✕</span>
+                    </motion.button>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* 고른 사람 — 요약 스트립. 비어 있으면 접혀 있다 */}
-      <AnimatePresence initial={false}>
-        {picked.length > 0 && (
-          <motion.div
-            className="picked"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={EASE}
-          >
-            <div className="picked-inner">
-              <AnimatePresence initial={false}>
-                {picked.map((p) => (
-                  <motion.button
-                    key={p.id}
-                    className="picked-item"
-                    initial={{ opacity: 0, scale: 0.6 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.6 }}
-                    transition={EASE}
-                    onClick={() => onRemovePerson(p.id)}
-                    aria-label={`${p.name} 빼기`}
-                  >
-                    <span className="avatar">{p.initial}</span>
-                    <span className="picked-name">{p.name}</span>
-                    <span className="picked-x" aria-hidden="true">✕</span>
-                  </motion.button>
-                ))}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <div className="search">
+          <span className="search-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" width="16" height="16">
+              <circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" strokeWidth="2" />
+              <line x1="13.5" y1="13.5" x2="17" y2="17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </span>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="이름으로 검색"
+            aria-label="동료 검색"
+          />
+        </div>
+      </div>
 
       {!query && (
         <>
@@ -132,16 +154,21 @@ export default function Attendees({ people, onAddPerson, onAddMany, onRemovePers
         )}
       </ul>
 
-      <div className="cta-dock">
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          className="cta"
-          onClick={onNext}
-          disabled={people.length < 2}
-        >
-          {people.length < 2 ? '함께할 사람을 골라주세요' : `나 포함 ${people.length}명으로 다음`}
-        </motion.button>
-      </div>
+      <AnimatePresence initial={false}>
+        {picked.length > 0 && (
+          <motion.div
+            className="cta-dock"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 24 }}
+            transition={EASE}
+          >
+            <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onNext}>
+              다음
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
