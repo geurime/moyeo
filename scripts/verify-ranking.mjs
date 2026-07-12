@@ -73,9 +73,8 @@ check('90분 회의는 후보 0개 (빈 상태 진입)', ranked90.length === 0, 
 const ranked120 = rankSlots(PEOPLE, YOUR_PROFILE, 120)
 check('2시간 회의도 후보 0개', ranked120.length === 0, `실제: ${ranked120.length}개`)
 
-// 준호(미확인)가 랭킹에 반영되는지 — 캘린더 폴백
-const junhoInTop = top && top.statuses.find((s) => s.person.id === 'junho')
-check('미확인자 준호가 캘린더 기준으로 반영됨', junhoInTop && junhoInTop.status === 'calendar-only')
+// 정책: 전원 확인이 후보 화면의 관문 — 시나리오의 6명 모두 responded
+check('시나리오 전원 확인 완료 상태', PEOPLE.every((p) => p.responded))
 
 console.log(failures === 0 ? '\n모든 검증 통과' : `\n${failures}개 실패`)
 process.exit(failures === 0 ? 0 : 1)

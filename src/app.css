@@ -733,25 +733,6 @@
 
 /* ── 화면 3: 랭킹 (시그니처) ─────────────────────── */
 
-.badge-row {
-  display: flex;
-  align-items: center;
-  gap: var(--s3);
-  margin-bottom: var(--s4);
-  flex-wrap: wrap;
-}
-
-.badge {
-  font: var(--t-cap);
-  font-weight: 700;
-  color: var(--go);
-  background: var(--go-tint);
-  border-radius: var(--r-pill);
-  padding: 5px var(--s3);
-  flex: none;
-}
-
-.badge-note { font: var(--t-cap); color: var(--sub); word-break: keep-all; }
 
 .slot-list { display: flex; flex-direction: column; gap: var(--s3); }
 

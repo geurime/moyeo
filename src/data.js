@@ -32,7 +32,7 @@ export const HOST = { id: 'jimin', name: '지민', initial: '지', required: tru
 // concessions: 양보 원장 — 원장이 있는 사람의 비선호는 랭킹에서 ×1.5로 무겁게.
 export const COLLEAGUES = [
   { id: 'seoyeon', name: '서연', initial: '서', responded: true,  lastRole: 'required', isYou: true },
-  { id: 'junho',   name: '준호', initial: '준', responded: false, lastRole: 'required' },
+  { id: 'junho',   name: '준호', initial: '준', responded: true,  lastRole: 'required' },
   { id: 'minsu',   name: '민수', initial: '민', responded: true,  lastRole: 'required' },
   { id: 'haeun',   name: '하은', initial: '하', responded: true,  lastRole: 'optional' },
   { id: 'jiyeon',  name: '지연', initial: '연', responded: true,  lastRole: 'optional', concessions: 1, concessionNote: '지난달 양보 1회' },

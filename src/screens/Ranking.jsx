@@ -23,9 +23,6 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
     [ranked.length, people, yourChips]
   )
 
-  const invitees = people.filter((p) => !p.isHost)
-  const respondedCount = invitees.filter((p) => p.responded).length
-  const silent = invitees.filter((p) => !p.responded)
 
   if (ranked.length === 0) {
     return (
@@ -56,17 +53,8 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
     <div className="product">
       <header className="screen-head">
         <h1 className="screen-title">모두가 괜찮은 시간을 찾았어요</h1>
-        <p className="screen-sub">필수 인원이 안 되는 시간은 이미 걸러냈어요</p>
+        <p className="screen-sub">5명이 모두 확인한 조건으로 골랐어요</p>
       </header>
-
-      <div className="badge-row">
-        <span className="badge">확인 {respondedCount}/{invitees.length}</span>
-        {silent.length > 0 && (
-          <span className="badge-note">
-            미확인 {silent.map((p) => p.name).join(', ')}님은 캘린더·지난 응답 기준으로 반영했어요
-          </span>
-        )}
-      </div>
 
       <div className="slot-list">
         {top3.map((slot, i) => {
