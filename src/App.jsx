@@ -3,12 +3,13 @@ import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { PEOPLE, YOUR_PROFILE, EXCEPTION_OPTIONS } from './data.js'
 import Framing from './screens/Framing.jsx'
 import Create from './screens/Create.jsx'
+import Attendees from './screens/Attendees.jsx'
 import Interstitial from './screens/Interstitial.jsx'
 import Adjust from './screens/Adjust.jsx'
 import Ranking from './screens/Ranking.jsx'
 import Confirmed from './screens/Confirmed.jsx'
 
-const STEPS = ['framing', 'create', 'sent', 'adjust', 'collected', 'ranking', 'confirmed']
+const STEPS = ['framing', 'create', 'attendees', 'sent', 'adjust', 'collected', 'ranking', 'confirmed']
 
 // 데모 내레이션 — 화자가 바뀌는 지점을 다크 화면으로 분리한다.
 const NARRATIONS = {
@@ -63,6 +64,7 @@ export default function App() {
 
   const viewpoint = {
     create: '지민 — 주최자의 화면',
+    attendees: '지민 — 주최자의 화면',
     adjust: '서연 — 참석자의 화면',
     ranking: '지민 — 주최자의 화면',
     confirmed: '지민 — 주최자의 화면',
@@ -108,8 +110,9 @@ export default function App() {
               transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
             >
               {step === 'framing' && <Framing onNext={next} />}
-              {step === 'create' && (
-                <Create
+              {step === 'create' && <Create onNext={next} />}
+              {step === 'attendees' && (
+                <Attendees
                   people={people}
                   onTogglePerson={(id) =>
                     setPeople((ps) => ps.map((p) => (p.id === id && !p.isHost ? { ...p, required: !p.required } : p)))

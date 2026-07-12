@@ -475,14 +475,18 @@
 }
 
 .cal-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: 28px 1fr 28px;
   align-items: center;
-  justify-content: space-between;
   padding: 0 var(--s2) var(--s3);
 }
-.cal-month { font: var(--t-cap); font-weight: 700; font-size: 0.9375rem; }
-.cal-nav { display: flex; gap: var(--s2); }
-.cal-nav button {
+.cal-month {
+  font: var(--t-cap);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  text-align: center;
+}
+.cal-nav-btn {
   width: 28px;
   height: 28px;
   display: grid;
@@ -493,7 +497,7 @@
   font-weight: 600;
   transition: background 0.15s ease;
 }
-.cal-nav button:active { background: var(--surface-dim); }
+.cal-nav-btn:active { background: var(--surface-dim); }
 
 .cal-grid {
   display: grid;
