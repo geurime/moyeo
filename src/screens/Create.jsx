@@ -115,7 +115,7 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
         </div>
 
         <div className="field">
-          <span className="field-label">기간 · {MEETING.deadline} 모여야 해요</span>
+          <span className="field-label">기간</span>
           <div className="cal">
             <div className="cal-head">
               <button className="cal-nav-btn" disabled aria-label="이전 달">‹</button>
