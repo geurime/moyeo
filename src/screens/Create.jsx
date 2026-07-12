@@ -44,7 +44,7 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
 
         <div className="field">
           <span className="field-label">소요 시간</span>
-          <div className="seg" role="group" aria-label="회의 길이">
+          <div className="seg" role="group" aria-label="소요 시간">
             <motion.span
               className="seg-thumb"
               animate={{ x: `${segIndex * 100}%` }}
