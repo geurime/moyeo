@@ -775,7 +775,7 @@
   font-size: 1.375rem;
   /* 비례 숫자 — tabular는 '1'의 광학 여백으로 좌측이 들떠 보임 */
   letter-spacing: -0.01em;
-  margin-bottom: 4px;
+  margin-bottom: 8px; /* 날짜+시간 덩어리와 요약 사이 — 그룹 경계 */
 }
 
 .slot-note { font: var(--t-cap); color: var(--sub); }

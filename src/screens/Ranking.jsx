@@ -15,11 +15,9 @@ function SummaryNote({ slot, total }) {
 
   const tail = []
   for (const s of absent) {
-    tail.push(
-      <span key={s.person.id}>
-        {' · '}{s.person.name}님{!s.person.required && <span className="role-tag">선택</span>} 불참
-      </span>
-    )
+    // 역할 태그 없음 — 후보에 불참이 보인다면 그 사람은 논리상 반드시 '선택'
+    // (필수 불참 시간은 애초에 탈락). 이 불변식은 화면 부제가 1회 선언한다.
+    tail.push(<span key={s.person.id}>{' · '}{s.person.name}님 불참</span>)
   }
   if (reluctant.length === 1) tail.push(<span key="r"> · {reluctant[0].person.name}님이 아쉬워요</span>)
   if (reluctant.length > 1) tail.push(<span key="r"> · {reluctant.length}명이 아쉬워요</span>)
@@ -80,7 +78,7 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
     <div className="product">
       <header className="screen-head">
         <h1 className="screen-title">모두가 괜찮은 시간을 찾았어요</h1>
-        <p className="screen-sub">5명이 모두 확인한 조건으로 골랐어요</p>
+        <p className="screen-sub">모두의 확인을 받아, 필수 인원이 되는 시간만 남겼어요</p>
       </header>
 
       <div className="slot-list" role="radiogroup" aria-label="후보 시간">
