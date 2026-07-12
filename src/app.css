@@ -92,6 +92,8 @@
     height: calc(100dvh - 40px);
     border-radius: 0;
     box-shadow: none;
+    transform: none; /* 실기기는 원본 크기 */
+    margin: 0;
   }
 }
 
