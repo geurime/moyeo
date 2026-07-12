@@ -18,7 +18,7 @@ export default function Create({ onNext }) {
         <h1 className="screen-title">새 회의</h1>
       </header>
 
-      <div className="field-card">
+      <div className="fields">
         <label className="field">
           <span className="field-label">회의 이름</span>
           <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="회의 이름" />
@@ -65,7 +65,6 @@ export default function Create({ onNext }) {
 
         <div className="field">
           <span className="field-label">기간</span>
-          <span className="field-value">{MEETING.weekLabel}</span>
           <div className="cal">
             <div className="cal-head">
               <button className="cal-nav-btn" onClick={() => setCalHint(true)} aria-label="이전 달">‹</button>

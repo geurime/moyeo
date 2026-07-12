@@ -226,25 +226,30 @@
 
 /* ── 화면 1: 회의 만들기 ─────────────────────────── */
 
-.field-card {
-  background: var(--surface-dim);
-  border-radius: var(--r-card);
-  padding: var(--s4) var(--s4);
+/* 입력 필드 — 박스 없이 배경 위에 직접. 구분은 선이 아니라 여백으로. */
+.fields {
   display: flex;
   flex-direction: column;
-  gap: var(--s4);
+  gap: var(--s6);
   margin-bottom: var(--s6);
 }
 
 .field { display: flex; flex-direction: column; gap: var(--s2); }
 .field-label { font: var(--t-cap); color: var(--sub); }
-.field input { font: var(--t-title); }
-.field-value { font: var(--t-title); }
+.field input {
+  font: var(--t-title);
+  border-bottom: 1.5px solid var(--line);
+  padding-bottom: var(--s2);
+  border-radius: 0;
+  transition: border-color 0.15s ease;
+}
+.field input:focus { border-color: var(--go); }
+.field input:focus-visible { outline: none; } /* 밑줄 색 변화가 포커스 표시 역할 */
 
 .seg {
   display: flex;
   gap: 4px;
-  background: var(--surface);
+  background: var(--surface-dim);
   border-radius: var(--r-inner);
   padding: 4px;
   width: fit-content;
