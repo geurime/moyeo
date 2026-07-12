@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { BUSY, DAYS, MEETING, ADJUST_OPTIONS, LEARNED_IDS } from '../data.js'
 import { formatMin } from '../ranking.js'
@@ -11,8 +11,19 @@ const DAY_END = 17
 // 칩은 화면 안에서 실동작하지만(눌러보기), 데모 진행에는 시나리오 고정값이 쓰인다.
 export default function Adjust({ durationMin, onNext }) {
   const [chipIds, setChipIds] = useState(LEARNED_IDS)
+  const [pulseId, setPulseId] = useState(null)
   const onToggle = (id) =>
     setChipIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
+
+  // 진입 연출 — 서연이 "이번엔 수요일이 어려워요"를 추가하는 장면을 자동 재생
+  useEffect(() => {
+    const t1 = setTimeout(() => setPulseId('d-wed'), 800)
+    const t2 = setTimeout(
+      () => setChipIds((ids) => (ids.includes('d-wed') ? ids : [...ids, 'd-wed'])),
+      950
+    )
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [])
   const dayOptions = ADJUST_OPTIONS.filter((o) => o.group === 'day')
   const timeOptions = ADJUST_OPTIONS.filter((o) => o.group === 'time')
   const preferOptions = ADJUST_OPTIONS.filter((o) => o.group === 'prefer')
@@ -22,6 +33,8 @@ export default function Adjust({ durationMin, onNext }) {
     <motion.button
       key={o.id}
       whileTap={{ scale: 0.94 }}
+      animate={pulseId === o.id ? { scale: [1, 0.88, 1] } : { scale: 1 }}
+      transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
       className={`chip ${chipIds.includes(o.id) ? 'is-on' : ''}`}
       onClick={() => onToggle(o.id)}
       aria-pressed={chipIds.includes(o.id)}
