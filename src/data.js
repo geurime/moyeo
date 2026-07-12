@@ -111,7 +111,7 @@ export const SOFT_CHIPS = {
   ],
   jiyeon: [
     // group 'day' = 외근류 요일 제약 — 참석 자체가 불확실해지므로 '불참 예상'으로 표시
-    { id: 'jiyeon-thu', kind: 'avoid', group: 'day', label: '목요일은 외근이 많아요', short: '목요일 외근', match: (d) => d === '목' },
+    { id: 'jiyeon-thu', kind: 'avoid', group: 'day', label: '목요일은 외근이 많아요', short: '목요일 외근', caption: '외근', match: (d) => d === '목' },
   ],
   haeun: [
     { id: 'haeun-late', kind: 'avoid', label: '16시 이후는 피하고 싶어요', short: '늦은 오후 비선호', match: (d, h) => h >= 16 },

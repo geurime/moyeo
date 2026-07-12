@@ -90,7 +90,8 @@ export function rankSlots(people, yourChips = [], durationMin = 60) {
           person: p,
           status,
           ledgerWeighted: (status === 'reluctant' || status === 'unlikely') && hasLedger,
-          avoids: avoids.map((c) => c.short),
+          // caption: 슬롯 맥락에서 중복되는 말(요일 등)을 뺀 짧은 사유
+          avoids: avoids.map((c) => c.caption || c.short),
           prefers: prefers.map((c) => c.short),
         })
       }
