@@ -799,46 +799,50 @@
 
 .slot-note { font: var(--t-cap); color: var(--sub); }
 
-/* 선택된 카드에서만 펼쳐지는 상세 — 결과로 그룹, 예외만 풀어쓴다 */
-.mini-list {
+/* 선택된 카드의 상세 — 아바타 스트립 + 제자리 주석. 예외만 캡션. */
+.mini-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
   margin-top: var(--s3);
   padding-top: var(--s3);
   border-top: 1px solid var(--line);
+}
+.mini-person {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--s3);
+  align-items: center;
+  gap: 3px;
+  text-align: center;
 }
-.mini-group { display: flex; flex-direction: column; gap: 3px; }
-.mini-label {
-  font: var(--t-cap);
+.mini-person .avatar {
+  width: 34px;
+  height: 34px;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--sub);
+  background: var(--surface);
 }
-.mini-label.label-in { color: var(--go); }
-.mini-label-sub { font-weight: 500; color: var(--sub); }
-.mini-names { font: var(--t-cap); font-weight: 600; }
-.mini-exception {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font: var(--t-cap);
-  font-weight: 600;
+.mini-person.is-reluctant .avatar,
+.mini-person.is-unlikely .avatar {
+  box-shadow: inset 0 0 0 1.5px var(--go);
+  color: var(--go);
 }
-
-.info-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 7px;
-  border-radius: 8px;
-  border: 1px solid #e2e5e9;
+.mini-person.is-unlikely .avatar,
+.mini-person.is-absent .avatar { opacity: 0.45; }
+.mini-pname {
   font: var(--t-cap);
   font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--sub);
 }
-.info-tag.tag-care { border-color: rgba(11, 122, 99, 0.3); color: var(--go); }
+.mini-pnote {
+  font: var(--t-cap);
+  font-size: 0.625rem;
+  color: var(--sub);
+  word-break: keep-all;
+  line-height: 1.3;
+}
+.mini-pnote.is-care { color: var(--go); font-weight: 700; }
 
 
 /* 빈 상태 — 후보가 없을 때, 멈추지 않고 대안을 제시 */

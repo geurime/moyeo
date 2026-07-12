@@ -105,51 +105,32 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                 <p className="slot-note">{summarize(slot, people.length)}</p>
 
                 <AnimatePresence initial={false}>
-                  {picked && (() => {
-                    const bySort = [...slot.statuses].sort((a, b) => (b.person.required ? 1 : 0) - (a.person.required ? 1 : 0))
-                    const attending = bySort.filter((s) => s.status === 'ok' || s.status === 'calendar-only')
-                    const reluctant = bySort.filter((s) => s.status === 'reluctant')
-                    const out = bySort.filter((s) => s.status === 'unlikely' || s.status === 'absent')
-                    const attendTotal = attending.length + reluctant.length
-                    const requiredAllIn = bySort.filter((s) => s.person.required).every((s) => s.status !== 'absent')
-                    return (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={EASE}
-                        style={{ overflow: 'hidden' }}
-                      >
-                        <div className="mini-list">
-                          <div className="mini-group">
-                            <p className="mini-label label-in">
-                              참석 {attendTotal}{requiredAllIn && <span className="mini-label-sub"> · 필수 전원</span>}
-                            </p>
-                            <p className="mini-names">{attending.map((s) => s.person.name).join(' · ')}</p>
-                            {reluctant.map((s) => (
-                              <p key={s.person.id} className="mini-exception">
-                                {s.person.name} · {s.avoids[0]}
-                                {s.ledgerWeighted && <span className="info-tag tag-care">양보</span>}
-                              </p>
-                            ))}
-                          </div>
-                          {out.length > 0 && (
-                            <div className="mini-group">
-                              <p className="mini-label">
-                                {out.some((s) => s.status === 'absent') ? '불참' : '불참 예상'} {out.length}
-                              </p>
-                              {out.map((s) => (
-                                <p key={s.person.id} className="mini-exception">
-                                  {s.person.name} ({s.person.required ? '필수' : '선택'}) · {s.status === 'absent' ? '일정 겹침' : s.avoids[0]}
-                                  {s.ledgerWeighted && <span className="info-tag tag-care">양보</span>}
-                                </p>
-                              ))}
+                  {picked && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={EASE}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      {/* 상세 = 아바타 스트립 + 제자리 주석. 예외만 캡션이 붙는다 */}
+                      <div className="mini-strip">
+                        {[...slot.statuses]
+                          .sort((a, b) => (b.person.required ? 1 : 0) - (a.person.required ? 1 : 0))
+                          .map((s) => (
+                            <div key={s.person.id} className={`mini-person is-${s.status}`}>
+                              <span className="avatar">{s.person.initial}</span>
+                              <span className="mini-pname">{s.person.name}</span>
+                              {(s.status === 'reluctant' || s.status === 'unlikely') && (
+                                <span className="mini-pnote">{s.avoids[0]}</span>
+                              )}
+                              {s.status === 'absent' && <span className="mini-pnote">일정 겹침</span>}
+                              {s.ledgerWeighted && <span className="mini-pnote is-care">양보</span>}
                             </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    )
-                  })()}
+                          ))}
+                      </div>
+                    </motion.div>
+                  )}
                 </AnimatePresence>
               </button>
             </motion.div>
