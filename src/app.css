@@ -63,8 +63,11 @@
 .mobile-reset { display: none; font: var(--t-cap); color: var(--sub); padding: var(--s2); }
 
 .phone {
-  width: 390px; /* 실기기 고정 규격 (iPhone 14) — 창 크기에 흔들리지 않는다 */
+  width: 390px; /* 논리 390×844 유지, 표시만 축소 — 책상 위 실물 크기감 */
   height: 844px;
+  transform: scale(0.85);
+  transform-origin: center;
+  margin: -63px 0; /* 스케일로 생기는 상하 여백 상쇄 (844×0.15/2) */
   flex: none;
   background: var(--surface);
   border-radius: 28px;
