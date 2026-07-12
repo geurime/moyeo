@@ -819,7 +819,11 @@
   align-items: center;
   margin-bottom: 2px;
 }
-.slot-date { font: var(--t-cap); font-weight: 600; }
+.slot-date {
+  font: var(--t-cap);
+  font-size: 0.9375rem; /* 날짜·요일 오버라인 공통 규칙 — 판단 축이라 본문 급 */
+  font-weight: 600;
+}
 /* 추천 — 헤드라인 우측의 가벼운 틴트 뱃지 */
 .slot-badge {
   margin-left: auto;
