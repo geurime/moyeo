@@ -38,13 +38,13 @@ export default function Create({ durationMin, onChangeDuration, onNext }) {
   return (
     <div className="product">
       <header className="screen-head">
-        <h1 className="screen-title">새 회의</h1>
+        <h1 className="screen-title">새 일정</h1>
       </header>
 
       <div className="fields">
         <label className="field">
-          <span className="field-label">회의 이름</span>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="회의 이름" />
+          <span className="field-label">제목</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} aria-label="일정 제목" />
         </label>
 
         <div className="field">
