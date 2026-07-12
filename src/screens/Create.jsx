@@ -2,8 +2,15 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { MEETING, CALENDAR } from '../data.js'
 
-const SPRING = { type: 'spring', stiffness: 700, damping: 35 }
-const DURATIONS = ['30분', '1시간', '90분', '직접']
+const EASE = { duration: 0.24, ease: [0.2, 0, 0, 1] }
+
+// 표기 규칙: 60분 미만은 분, 60분부터는 시간(+분)
+const DURATIONS = [
+  { label: '30분', min: 30 },
+  { label: '1시간', min: 60 },
+  { label: '1시간 30분', min: 90 },
+  { label: '직접', min: null },
+]
 
 function formatMin(min) {
   if (min < 60) return `${min}분`
@@ -11,13 +18,22 @@ function formatMin(min) {
   return `${Math.floor(min / 60)}시간 ${min % 60}분`
 }
 
-export default function Create({ onNext }) {
+export default function Create({ durationMin, onChangeDuration, onNext }) {
   const [title, setTitle] = useState(MEETING.title)
-  const [duration, setDuration] = useState('1시간')
-  const [customMin, setCustomMin] = useState(75)
-  const [calHint, setCalHint] = useState(false)
+  const presetIndex = DURATIONS.findIndex((d) => d.min === durationMin)
+  const [custom, setCustom] = useState(presetIndex === -1)
+  const segIndex = custom ? 3 : presetIndex
   const { weeks, weekdays, monthLabel, rangeStart, rangeEnd, today } = CALENDAR
-  const durationIndex = DURATIONS.indexOf(duration)
+
+  const pick = (d) => {
+    if (d.min === null) {
+      setCustom(true)
+      onChangeDuration(75)
+    } else {
+      setCustom(false)
+      onChangeDuration(d.min)
+    }
+  }
 
   return (
     <div className="product">
@@ -36,58 +52,58 @@ export default function Create({ onNext }) {
           <div className="seg" role="group" aria-label="회의 길이">
             <motion.span
               className="seg-thumb"
-              animate={{ x: `${durationIndex * 100}%` }}
-              transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
+              animate={{ x: `${segIndex * 100}%` }}
+              transition={EASE}
               aria-hidden="true"
             />
-            {DURATIONS.map((d) => (
+            {DURATIONS.map((d, i) => (
               <button
-                key={d}
-                className={`seg-btn ${duration === d ? 'is-on' : ''}`}
-                onClick={() => setDuration(d)}
-                aria-pressed={duration === d}
+                key={d.label}
+                className={`seg-btn ${segIndex === i ? 'is-on' : ''}`}
+                onClick={() => pick(d)}
+                aria-pressed={segIndex === i}
               >
-                {d}
+                {d.label}
               </button>
             ))}
           </div>
 
           <AnimatePresence initial={false}>
-            {duration === '직접' && (
+            {custom && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
+                transition={EASE}
                 style={{ overflow: 'hidden', display: 'flex', justifyContent: 'center' }}
               >
                 <div className="stepper">
                   <motion.button
-                    whileTap={{ scale: 0.88 }}
+                    whileTap={{ scale: 0.9 }}
                     className="stepper-btn"
-                    onClick={() => setCustomMin((m) => Math.max(15, m - 15))}
-                    disabled={customMin <= 15}
+                    onClick={() => onChangeDuration(Math.max(15, durationMin - 15))}
+                    disabled={durationMin <= 15}
                     aria-label="15분 줄이기"
                   >
                     −
                   </motion.button>
                   <AnimatePresence mode="wait" initial={false}>
                     <motion.span
-                      key={customMin}
+                      key={durationMin}
                       className="stepper-value"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.12 }}
                     >
-                      {formatMin(customMin)}
+                      {formatMin(durationMin)}
                     </motion.span>
                   </AnimatePresence>
                   <motion.button
-                    whileTap={{ scale: 0.88 }}
+                    whileTap={{ scale: 0.9 }}
                     className="stepper-btn"
-                    onClick={() => setCustomMin((m) => Math.min(240, m + 15))}
-                    disabled={customMin >= 240}
+                    onClick={() => onChangeDuration(Math.min(240, durationMin + 15))}
+                    disabled={durationMin >= 240}
                     aria-label="15분 늘리기"
                   >
                     +
@@ -96,19 +112,15 @@ export default function Create({ onNext }) {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {duration !== '1시간' && (
-            <p className="picker-hint">데모 후보는 1시간 기준으로 보여드려요</p>
-          )}
         </div>
 
         <div className="field">
-          <span className="field-label">기간</span>
+          <span className="field-label">기간 · {MEETING.deadline} 모여야 해요</span>
           <div className="cal">
             <div className="cal-head">
-              <button className="cal-nav-btn" onClick={() => setCalHint(true)} aria-label="이전 달">‹</button>
+              <button className="cal-nav-btn" disabled aria-label="이전 달">‹</button>
               <span className="cal-month">{monthLabel}</span>
-              <button className="cal-nav-btn" onClick={() => setCalHint(true)} aria-label="다음 달">›</button>
+              <button className="cal-nav-btn" disabled aria-label="다음 달">›</button>
             </div>
             <div className="cal-grid cal-weekdays" aria-hidden="true">
               {weekdays.map((w, i) => (
@@ -119,16 +131,14 @@ export default function Create({ onNext }) {
               <div className="cal-grid" key={wi}>
                 {week.map((d, di) => {
                   if (d === null) return <span key={di} className="cal-day" />
-                  const weekend = di === 0 || di === 6
                   const inRange = d >= rangeStart && d <= rangeEnd
                   const isEdge = d === rangeStart || d === rangeEnd
-                  const past = d < today
                   const num = isEdge ? (
                     <motion.span
                       className="cal-num"
                       initial={{ scale: 0.4, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      transition={{ type: 'spring', stiffness: 500, damping: 26, delay: d === rangeEnd ? 0.24 : 0.16 }}
+                      transition={{ ...EASE, delay: d === rangeEnd ? 0.28 : 0.2 }}
                     >
                       {d}
                     </motion.span>
@@ -136,7 +146,7 @@ export default function Create({ onNext }) {
                     <span className="cal-num">{d}</span>
                   )
                   return (
-                    <button
+                    <span
                       key={di}
                       className={[
                         'cal-day',
@@ -144,20 +154,17 @@ export default function Create({ onNext }) {
                         d === rangeStart && 'is-range-start',
                         d === rangeEnd && 'is-range-end',
                         di === 0 && 'is-sun',
-                        (weekend || past) && 'is-muted',
+                        !inRange && 'is-muted', // 기한 밖 날짜는 선택 불가
                         d === today && 'is-today',
                       ].filter(Boolean).join(' ')}
-                      disabled={weekend || past}
-                      onClick={() => { if (!inRange) setCalHint(true) }}
                       aria-label={`7월 ${d}일${inRange ? ' · 선택된 기간' : ''}`}
                     >
                       {num}
-                    </button>
+                    </span>
                   )
                 })}
               </div>
             ))}
-            {calHint && <p className="picker-hint">데모 데이터는 다음 주(7/13–17) 기준이에요</p>}
           </div>
         </div>
       </div>

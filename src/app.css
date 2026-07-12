@@ -508,12 +508,20 @@
 }
 .picker-chev.is-open { transform: rotate(180deg); }
 
-.picker-hint {
-  font: var(--t-cap);
-  font-size: 0.6875rem;
-  color: var(--warn);
-  padding-top: var(--s2);
+/* 빈 상태 — 후보가 없을 때, 멈추지 않고 대안을 제시 */
+.empty-card {
+  background: var(--surface-dim);
+  border-radius: var(--r-card);
+  padding: var(--s6) var(--s5);
+  text-align: center;
 }
+.empty-lead {
+  font: var(--t-body);
+  color: var(--sub);
+  margin-bottom: var(--s4);
+  word-break: keep-all;
+}
+.empty-lead strong { color: var(--ink); font-weight: 700; }
 
 /* 기간 캘린더 — 연속 밴드 + 원형 마커 (애플 캘린더 문법) */
 .cal {

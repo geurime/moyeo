@@ -1,17 +1,18 @@
 import { motion } from 'framer-motion'
 import { MEETING, DAYS } from '../data.js'
+import { endLabel } from '../ranking.js'
 
 const DAY_FULL = { 월: '월요일', 화: '화요일', 수: '수요일', 목: '목요일', 금: '금요일' }
 
 const item = {
   hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 340, damping: 30 } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.2, 0, 0, 1] } },
 }
 
-export default function Confirmed({ slot, onReset }) {
+export default function Confirmed({ slot, durationMin, onReset }) {
   if (!slot) return null
   const date = DAYS.find((d) => d.key === slot.day)?.date
-  const when = `${DAY_FULL[slot.day]} ${date} · ${slot.hour}:00–${slot.hour + 1}:00`
+  const when = `${DAY_FULL[slot.day]} ${date} · ${slot.hour}:00–${endLabel(slot.hour, durationMin)}`
 
   const reluctant = slot.statuses.filter((s) => s.status === 'reluctant')
   const absent = slot.statuses.filter((s) => s.status === 'absent')

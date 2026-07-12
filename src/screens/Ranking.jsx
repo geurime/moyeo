@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { rankSlots, slotReason } from '../ranking.js'
+import { rankSlots, slotReason, endLabel } from '../ranking.js'
 import { DAYS } from '../data.js'
 
 const DAY_FULL = { 월: '월요일', 화: '화요일', 수: '수요일', 목: '목요일', 금: '금요일' }
@@ -12,14 +12,45 @@ const STATUS_LABEL = {
   'calendar-only': '참석 · 캘린더 기준',
 }
 
-export default function Ranking({ people, yourChips, onConfirm }) {
-  const ranked = useMemo(() => rankSlots(people, yourChips), [people, yourChips])
+export default function Ranking({ people, yourChips, durationMin, onReduceDuration, onConfirm }) {
+  const ranked = useMemo(() => rankSlots(people, yourChips, durationMin), [people, yourChips, durationMin])
   const top3 = ranked.slice(0, 3)
   const [openIndex, setOpenIndex] = useState(0)
+
+  // 빈 상태 대비 — 1시간이면 몇 개가 생기는지 미리 계산해 대안으로 제시
+  const hourlyCount = useMemo(
+    () => (ranked.length === 0 ? rankSlots(people, yourChips, 60).length : 0),
+    [ranked.length, people, yourChips]
+  )
 
   const invitees = people.filter((p) => !p.isHost)
   const respondedCount = invitees.filter((p) => p.responded).length
   const silent = invitees.filter((p) => !p.responded)
+
+  if (ranked.length === 0) {
+    return (
+      <div className="product">
+        <header className="screen-head">
+          <h1 className="screen-title">이 길이로는 다음 주에<br />모일 수 있는 시간이 없어요</h1>
+          <p className="screen-sub">필수 인원이 연속으로 비어 있는 시간이 없어서예요</p>
+        </header>
+        <div className="empty-card">
+          {hourlyCount > 0 ? (
+            <>
+              <p className="empty-lead">
+                회의를 <strong>1시간</strong>으로 줄이면 후보 <strong>{hourlyCount}개</strong>가 생겨요
+              </p>
+              <motion.button whileTap={{ scale: 0.98 }} className="cta" onClick={onReduceDuration}>
+                1시간으로 줄여서 보기
+              </motion.button>
+            </>
+          ) : (
+            <p className="empty-lead">기한을 다다음 주까지 넓히거나, 선택 인원 없이 다시 잡아보세요</p>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="product">
@@ -59,7 +90,7 @@ export default function Ranking({ people, yourChips, onConfirm }) {
                   <span className="slot-day">{DAY_FULL[slot.day]} {date}</span>
                 </div>
                 <div className="slot-time">
-                  {slot.hour}:00<span className="slot-time-end">–{slot.hour + 1}:00</span>
+                  {slot.hour}:00<span className="slot-time-end">–{endLabel(slot.hour, durationMin)}</span>
                 </div>
                 <div className="dots-row">
                   <div className="dots">

@@ -63,6 +63,14 @@ check('양보 원장 가중 적용 (목 15:00 = -18)', thu15 && thu15.score === 
   thu15 ? `실제: ${thu15.score}` : '슬롯 없음')
 check('원장 가중이 상태에 표시됨', thu15 && thu15.statuses.some((s) => s.ledgerWeighted))
 
+// 길이 실동작: 30분이면 후보·순위 동일(1시간 안에 들어가므로), 90분이면 연속 시간이 없어 0개
+const top30 = rankSlots(PEOPLE, YOUR_PROFILE, 30)[0]
+check('30분 회의도 1위는 화 10:00', top30 && top30.day === '화' && top30.hour === 10)
+const ranked90 = rankSlots(PEOPLE, YOUR_PROFILE, 90)
+check('90분 회의는 후보 0개 (빈 상태 진입)', ranked90.length === 0, `실제: ${ranked90.length}개`)
+const ranked120 = rankSlots(PEOPLE, YOUR_PROFILE, 120)
+check('2시간 회의도 후보 0개', ranked120.length === 0, `실제: ${ranked120.length}개`)
+
 // 준호(미확인)가 랭킹에 반영되는지 — 캘린더 폴백
 const junhoInTop = top && top.statuses.find((s) => s.person.id === 'junho')
 check('미확인자 준호가 캘린더 기준으로 반영됨', junhoInTop && junhoInTop.status === 'calendar-only')

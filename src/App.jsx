@@ -36,6 +36,7 @@ const NARRATIONS = {
 export default function App() {
   const [stepIndex, setStepIndex] = useState(0)
   const [people, setPeople] = useState(PEOPLE)
+  const [durationMin, setDurationMin] = useState(60) // 회의 길이(분) — 랭킹에 실반영
   const [profileOff, setProfileOff] = useState([]) // 이번 주만 끈 프로필 항목
   const [exceptions, setExceptions] = useState([]) // 이번 주만 추가한 예외
   const [confirmedSlot, setConfirmedSlot] = useState(null)
@@ -54,6 +55,7 @@ export default function App() {
   const reset = () => {
     setStepIndex(0)
     setPeople(PEOPLE)
+    setDurationMin(60)
     setProfileOff([])
     setExceptions([])
     setConfirmedSlot(null)
@@ -110,7 +112,9 @@ export default function App() {
               transition={{ duration: 0.24, ease: [0.2, 0, 0, 1] }}
             >
               {step === 'framing' && <Framing onNext={next} />}
-              {step === 'create' && <Create onNext={next} />}
+              {step === 'create' && (
+                <Create durationMin={durationMin} onChangeDuration={setDurationMin} onNext={next} />
+              )}
               {step === 'attendees' && (
                 <Attendees
                   people={people}
@@ -135,10 +139,13 @@ export default function App() {
                 />
               )}
               {step === 'ranking' && (
-                <Ranking people={people} yourChips={yourChips}
+                <Ranking people={people} yourChips={yourChips} durationMin={durationMin}
+                  onReduceDuration={() => setDurationMin(60)}
                   onConfirm={(slot) => { setConfirmedSlot(slot); next() }} />
               )}
-              {step === 'confirmed' && <Confirmed slot={confirmedSlot} onReset={reset} />}
+              {step === 'confirmed' && (
+                <Confirmed slot={confirmedSlot} durationMin={durationMin} onReset={reset} />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

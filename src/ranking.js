@@ -19,21 +19,44 @@ export function isBusy(personId, day, hour) {
   return (ALL_BUSY[personId] || []).some((b) => b.day === day && hour >= b.start && hour < b.end)
 }
 
+// 연속 업무 시간 블록 — 12시는 점심이라 11→13은 연속이 아니다.
+const RUNS = [[10, 11], [13, 14, 15, 16]]
+
+// duration(분)이 1시간을 넘으면 연속으로 비어 있는 시간이 필요하다.
+function spanFor(startHour, durationMin) {
+  const need = Math.ceil(durationMin / 60)
+  const run = RUNS.find((r) => r.includes(startHour))
+  const idx = run.indexOf(startHour)
+  if (idx + need > run.length) return null // 블록 끝을 넘거나 점심을 가로지름
+  return run.slice(idx, idx + need)
+}
+
+// 종료 시각 라벨 — "10:00–11:30" 의 뒷부분
+export function endLabel(startHour, durationMin) {
+  const endH = startHour + Math.floor(durationMin / 60)
+  const endM = durationMin % 60
+  return `${endH}:${String(endM).padStart(2, '0')}`
+}
+
 // people: [{ id, name, required, responded }]
-// yourChips: 서연이 응답 화면에서 고른 칩 배열 [{ kind, match, short }]
-export function rankSlots(people, yourChips = []) {
+// yourChips: 서연이 조정 화면에서 확정한 칩 배열 [{ kind, match, short }]
+// durationMin: 회의 길이(분) — 슬롯 성립 조건과 종료 시각에 반영
+export function rankSlots(people, yourChips = [], durationMin = 60) {
   const slots = []
 
   for (const { key: day, date } of DAYS) {
     for (const hour of HOURS) {
+      const span = spanFor(hour, durationMin)
+      if (!span) continue
+
       let score = 0
       let excluded = false
       const statuses = [] // 인별 상태
 
       for (const p of people) {
-        const busy = isBusy(p.id, day, hour)
+        const busy = span.some((h) => isBusy(p.id, day, h))
         const chips = p.id === 'seoyeon' ? yourChips : SOFT_CHIPS[p.id] || []
-        const hits = busy ? [] : chips.filter((c) => c.match(day, hour))
+        const hits = busy ? [] : chips.filter((c) => span.some((h) => c.match(day, h)))
         const avoids = hits.filter((c) => c.kind === 'avoid')
         const prefers = hits.filter((c) => c.kind === 'prefer')
 
