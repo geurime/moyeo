@@ -118,9 +118,10 @@ export default function Ranking({ people, yourChips, durationMin, onReduceDurati
                                 <span className="mini-pnote">{s.avoids[0]}</span>
                               )}
                               {s.status === 'absent' && (
-                                <span className="mini-pnote">
-                                  {s.person.required ? '' : '선택 · '}{s.avoids[0] || '일정 겹침'}
-                                </span>
+                                <>
+                                  {!s.person.required && <span className="mini-pnote">선택</span>}
+                                  <span className="mini-pnote">{s.avoids[0] || '일정 겹침'}</span>
+                                </>
                               )}
                             </div>
                           ))}
