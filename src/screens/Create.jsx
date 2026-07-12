@@ -83,9 +83,17 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
             {calOpen && (
               <motion.div {...EXPAND} style={{ overflow: 'hidden' }}>
                 <div className="cal">
-                  <p className="cal-month">{monthLabel}</p>
+                  <div className="cal-head">
+                    <span className="cal-month">{monthLabel}</span>
+                    <div className="cal-nav">
+                      <button onClick={() => setCalHint(true)} aria-label="이전 달">‹</button>
+                      <button onClick={() => setCalHint(true)} aria-label="다음 달">›</button>
+                    </div>
+                  </div>
                   <div className="cal-grid cal-weekdays" aria-hidden="true">
-                    {weekdays.map((w) => <span key={w} className="cal-wd">{w}</span>)}
+                    {weekdays.map((w, i) => (
+                      <span key={w} className={`cal-wd ${i === 0 ? 'is-sun' : ''}`}>{w}</span>
+                    ))}
                   </div>
                   {weeks.map((week, wi) => (
                     <div className="cal-grid" key={wi}>
@@ -93,7 +101,20 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
                         if (d === null) return <span key={di} className="cal-day" />
                         const weekend = di === 0 || di === 6
                         const inRange = d >= rangeStart && d <= rangeEnd
+                        const isEdge = d === rangeStart || d === rangeEnd
                         const past = d < today
+                        const num = isEdge ? (
+                          <motion.span
+                            className="cal-num"
+                            initial={{ scale: 0.4, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 26, delay: d === rangeEnd ? 0.08 : 0.02 }}
+                          >
+                            {d}
+                          </motion.span>
+                        ) : (
+                          <span className="cal-num">{d}</span>
+                        )
                         return (
                           <button
                             key={di}
@@ -102,13 +123,15 @@ export default function Create({ people, onTogglePerson, onAddPerson, onRemovePe
                               inRange && 'is-range',
                               d === rangeStart && 'is-range-start',
                               d === rangeEnd && 'is-range-end',
+                              di === 0 && 'is-sun',
                               (weekend || past) && 'is-muted',
+                              d === today && 'is-today',
                             ].filter(Boolean).join(' ')}
                             disabled={weekend || past}
                             onClick={() => (inRange ? setCalOpen(false) : setCalHint(true))}
                             aria-label={`7월 ${d}일${inRange ? ' · 선택된 기간' : ''}`}
                           >
-                            {d}
+                            {num}
                           </button>
                         )
                       })}

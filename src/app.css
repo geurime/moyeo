@@ -465,54 +465,86 @@
   padding-top: var(--s2);
 }
 
-/* 기간 캘린더 */
+/* 기간 캘린더 — 연속 밴드 + 원형 마커 (애플 캘린더 문법) */
 .cal {
   background: var(--surface);
-  border-radius: var(--r-inner);
-  padding: var(--s3) var(--s3) var(--s3);
-  margin-top: var(--s2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: var(--s4) var(--s3) var(--s3);
+  margin-top: var(--s3);
 }
-.cal-month {
-  font: var(--t-cap);
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: var(--s2);
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--s2) var(--s3);
 }
+.cal-month { font: var(--t-cap); font-weight: 700; font-size: 0.9375rem; }
+.cal-nav { display: flex; gap: var(--s2); }
+.cal-nav button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
+  color: var(--sub);
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+.cal-nav button:active { background: var(--surface-dim); }
+
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 3px;
 }
 .cal-wd {
   font: var(--t-cap);
   font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   color: var(--sub);
   text-align: center;
-  padding: var(--s2) 0;
+  padding-bottom: var(--s2);
 }
+.cal-wd.is-sun { color: rgba(224, 82, 77, 0.75); }
+
 .cal-day {
-  height: 34px;
+  height: 38px;
   display: grid;
   place-items: center;
+}
+
+.cal-num {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-pill);
   font: var(--t-cap);
   font-weight: 600;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
-.cal-day.is-muted { color: #c5cad1; }
-.cal-day.is-range {
-  background: var(--go-tint);
-  color: var(--go);
+
+.cal-day.is-sun .cal-num { color: #e0524d; }
+.cal-day.is-muted .cal-num { color: #c6cbd1; }
+.cal-day.is-sun.is-muted .cal-num { color: rgba(224, 82, 77, 0.35); }
+.cal-day.is-today .cal-num { box-shadow: inset 0 0 0 1.5px #d9dce0; }
+
+/* 범위 — 연속된 틴트 밴드, 양끝은 필 마커 */
+.cal-day.is-range { background: var(--go-tint); }
+.cal-day.is-range .cal-num { color: var(--go); font-weight: 700; }
+.cal-day.is-range-start { border-radius: var(--r-pill) 0 0 var(--r-pill); }
+.cal-day.is-range-end { border-radius: 0 var(--r-pill) var(--r-pill) 0; }
+.cal-day.is-range-start .cal-num,
+.cal-day.is-range-end .cal-num {
+  background: var(--go);
+  color: #fff;
   font-weight: 700;
-}
-.cal-day.is-range-start {
-  border-radius: 10px 0 0 10px;
-  background: var(--go);
-  color: #fff;
-}
-.cal-day.is-range-end {
-  border-radius: 0 10px 10px 0;
-  background: var(--go);
-  color: #fff;
+  box-shadow: 0 2px 8px rgba(11, 122, 99, 0.35);
 }
 
 /* 길이 직접 입력 */
